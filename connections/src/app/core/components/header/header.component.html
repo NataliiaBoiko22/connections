@@ -1,0 +1,24 @@
+<tui-theme-night *ngIf="night$ | async"></tui-theme-night>
+
+<tui-app-bar class="color gray">
+  <button tuiButton tuiSlot="left">Cancel</button>
+  <!-- <label tuiLabel="More interesting title">Taiga UI</label> -->
+  <tui-icon
+    icon="tuiIconSun"
+    *ngIf="night$ | async"
+    class="theme-icon"
+  ></tui-icon>
+  <tui-toggle
+    size="m"
+    class="tui-space_right-1 toggle"
+    [ngModel]="night$ | async"
+    (ngModelChange)="onToggleChange()"
+  ></tui-toggle>
+
+  <tui-icon
+    icon="tuiIconMoon"
+    *ngIf="!(night$ | async)"
+    class="theme-icon"
+  ></tui-icon>
+  <button tuiButton tuiSlot="right" (click)="toLoginPage()">Login</button>
+</tui-app-bar>

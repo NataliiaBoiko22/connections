@@ -1,7 +1,33 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { TuiAlertModule, TuiDialogModule, TuiRootModule } from '@taiga-ui/core';
-import {TuiBlockStatusModule} from '@taiga-ui/layout';
-import {TuiThemeNightModule, TuiModeModule} from '@taiga-ui/core';
+import {
+  TuiAlertModule,
+  TuiButtonModule,
+  TuiDialogModule,
+  TuiErrorModule,
+  TuiLabelModule,
+  TuiRootModule,
+  TuiTextfieldControllerModule,
+} from '@taiga-ui/core';
+import { TuiBlockStatusModule } from '@taiga-ui/layout';
+import { TuiThemeNightModule, TuiModeModule } from '@taiga-ui/core';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { SignInBody } from 'src/app/shared/models/auth-models';
+import { CommonModule } from '@angular/common';
+import { NotificationComponent } from 'src/app/shared/components/notification/notification.component';
+import {
+  TuiFieldErrorPipeModule,
+  TuiInputModule,
+  TuiInputPasswordModule,
+} from '@taiga-ui/kit';
+import { TuiCardModule } from '@taiga-ui/experimental';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-signin',
@@ -9,11 +35,60 @@ import {TuiThemeNightModule, TuiModeModule} from '@taiga-ui/core';
   styleUrls: ['./signin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [TuiRootModule, TuiDialogModule, TuiAlertModule, TuiBlockStatusModule,
+  imports: [
+    CommonModule,
+    RouterModule,
+    TuiRootModule,
+    TuiDialogModule,
+    TuiInputModule,
+    TuiCardModule,
+    TuiLabelModule,
+    TuiInputPasswordModule,
+    TuiAlertModule,
+    TuiBlockStatusModule,
+    TuiButtonModule,
     TuiThemeNightModule,
-    TuiModeModule],
-
+    TuiModeModule,
+    NotificationComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    TuiErrorModule,
+    TuiFieldErrorPipeModule,
+    TuiTextfieldControllerModule,
+    TuiDialogModule,
+  ],
 })
 export class SigninComponent {
+  patterns = {
+    PATTERN_NAME: /^[a-z0-9]+$/,
+    PATTERN_PASSWORD:
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
+  };
+  authForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.patterns.PATTERN_PASSWORD),
+    ]),
+  });
 
+  // controlEmail = this.authForm.get('email') as FormControl;
+
+  // controlPassword = this.authForm.get('password') as FormControl;
+
+  // constructor(private auth: AuthService) {}
+  constructor(private authService: AuthService) {
+    this.authForm.valueChanges.subscribe(() => {
+      this.authForm.markAsTouched();
+    });
+  }
+
+  onSingInButton(): void {
+    const data = this.authForm.value as SignInBody;
+
+    if (this.authForm.invalid) {
+      return;
+    }
+    this.authService.singIn(data);
+  }
 }

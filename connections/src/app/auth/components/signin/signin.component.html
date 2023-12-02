@@ -1,7 +1,62 @@
-<tui-block-status>
-
-
-   <span> This is login page</span>
-</tui-block-status>
-
-
+<!-- <app-notification *ngIf="showNotification"></app-notification> -->
+<div tuiCard class="login">
+  <form class="login__form" [formGroup]="authForm">
+    <h3 class="tui-form__header tui-form__header_margin-top_none login__title">
+      Login
+    </h3>
+    <div class="tui-form__row">
+      <label tuiLabel="Email" class="tui-space_bottom-4">
+        <tui-input
+          formControlName="email"
+          tuiHintContent="A tooltip"
+          [tuiTextfieldCleaner]="true"
+        >
+          Enter an email
+          <input autocomplete="email" tuiTextfield type="email" />
+          <span class="tui-required"></span>
+        </tui-input>
+        <tui-error
+          formControlName="email"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
+    <div class="tui-form__row">
+      <label tuiLabel="Password" class="tui-space_bottom-4">
+        <tui-input-password formControlName="password" ngDefaultControl
+          >Enter a password</tui-input-password
+        >
+        <tui-error
+          formControlName="password"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
+    <div class="tui-form__buttons login__buttons">
+      <button
+        appearance="flat"
+        size="m"
+        tuiButton
+        type="button"
+        class="tui-form__button"
+      >
+        Cancel
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button"
+        [disabled]="authForm.invalid"
+        (click)="onSingInButton()"
+      >
+        Submit
+      </button>
+    </div>
+    <tr></tr>
+    <div class="login__question">
+      <span class="login__question-text">Don't have an account yet?</span>
+      <a class="login__question-link" routerLink="/signup">"Sing Up!"</a>
+    </div>
+  </form>
+</div>

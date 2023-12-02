@@ -1,19 +1,27 @@
-import { User } from './user-models';
+// import { User } from './user-models';
 
 export interface SignInBody {
-  login: string;
+  email: string;
   password: string;
 }
 
-export interface SignInResponseBody extends User {
+// export interface SignInResponseBody extends User {
+//   token: string;
+// }
+// export interface SignUpResponseBody extends User {
+//   token: string;
+//   uid: string;
+// }
+export interface SignInResponseBody {
   token: string;
-}
-export interface SignUpResponseBody extends User {
-  token: string;
-  _id: string;
+  uid: string;
 }
 export interface SignUpBody extends SignInBody {
   name: string;
 }
 
-export type SignUpResponse = User;
+// export type SignUpResponse = User;
+export interface SignUpResponse {
+  status: {};
+  // Другие поля, если они присутствуют в ответе
+}

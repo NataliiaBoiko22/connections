@@ -1,0 +1,19 @@
+.color {
+  color: var(--tui-link);
+}
+
+.gray {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: var(--tui-base-03);
+}
+.theme-icon {
+  width: 18px;
+}
+
+.black {
+  background: var(--tui-text-01);
+  color: var(--tui-warning-fill-night);
+}
+.toggle {
+  border: 1px solid var(--tui-primary-hover);
+}

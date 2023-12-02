@@ -1,9 +1,6 @@
-<tui-theme-night *ngIf="night$ | async"></tui-theme-night>
-
-<tui-root [tuiMode]="mode">
-  <button (click)="night.toggle()">Turn theme</button>
+<tui-root>
   <ng-container ngProjectAs="tuiOverContent">
+    <app-header></app-header>
     <router-outlet></router-outlet>
-    <!-- Content over app content -->
   </ng-container>
 </tui-root>

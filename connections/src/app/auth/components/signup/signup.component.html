@@ -1,71 +1,77 @@
-<tui-block-status>
-    <app-notification></app-notification>
+<div tuiCard class="registration">
+  <form class="registration__form" [formGroup]="authForm">
+    <h3
+      class="tui-form__header tui-form__header_margin-top_none registration__title"
+    >
+      Registration
+    </h3>
+    <div class="tui-form__row">
+      <label tuiLabel="First name" class="tui-space_bottom-4">
+        <tui-input
+          formControlName="name"
+          tuiHintContent="A tooltip"
+          ngDefaultControl
+        >
+          Enter your firstname
+          <input placeholder="Enter your firstname" tuiTextfield type="text" />
+          <span class="tui-required"></span>
+        </tui-input>
+        <tui-error
+          formControlName="name"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
 
-    <span> This is registration page</span>
-    <form [formGroup]="authForm">
-        <div class="tui-row tui-row_sme">
-            <div class="tui-col_8">
-                <h3 class="tui-form__header tui-form__header_margin-top_none">A header</h3>
-                <div class="tui-form__row">
-                    <label
-                    tuiLabel="First name"
-                    class="tui-space_bottom-4"
-                >
-                    <tui-input
-                        formControlName="name"
-                        tuiHintContent="A tooltip"
-                    >
-                        <input
-                            placeholder="Enter your firstname"
-                            tuiTextfield
-                        />
-                        <span class="tui-required"></span>
-                    </tui-input>
-                    <tui-error
-                        formControlName="name"
-                        [error]="[] | tuiFieldError | async"
-                    ></tui-error>
-                </label>
-                </div>
-                <div class="tui-form__row">
-                    <label
-                    tuiLabel="Email"
-                    class="tui-space_bottom-4"
-                >
-                    <tui-input
-                        formControlName="email"
-                        tuiHintContent="A tooltip"
-                    >
-                        <input
-                            placeholder="Enter your email"
-                            tuiTextfield
-                        />
-                        <span class="tui-required"></span>
-                    </tui-input>
-                    <tui-error
-                        formControlName="email"
-                        [error]="[] | tuiFieldError | async"
-                    ></tui-error>
-                </label>
-                </div>
-                <div class="tui-form__row tui-form__row_multi-fields">
-                    <div class="tui-form__multi-field">
-                        <label
-                        tuiLabel="Password"
-                        class="tui-space_bottom-4"
-                    >
-                        <tui-input-password formControlName="password">Input password</tui-input-password>
-                        <tui-error
-                            formControlName="password"
-                            [error]="[] | tuiFieldError | async"
-                        ></tui-error>
-                    </label>
-                    </div>
-                    
-                </div>
+    <div class="tui-form__row">
+      <label tuiLabel="Email" class="tui-space_bottom-4">
+        <tui-input
+          formControlName="email"
+          tuiHintContent="A tooltip"
+          [tuiTextfieldCleaner]="true"
+        >
+          Enter an email
+          <input autocomplete="email" tuiTextfield type="email" />
+          <span class="tui-required"></span>
+        </tui-input>
+        <tui-error
+          formControlName="email"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
 
-                </div>
-        </div>
-               
-        </form>
- </tui-block-status>
+    <div class="tui-form__row">
+      <label tuiLabel="Password" class="tui-space_bottom-4">
+        <tui-input-password formControlName="password" ngDefaultControl
+          >Enter a password</tui-input-password
+        >
+        <tui-error
+          formControlName="password"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
+    <div class="tui-form__buttons registration__buttons">
+      <button
+        appearance="flat"
+        size="m"
+        tuiButton
+        type="button"
+        class="tui-form__button"
+      >
+        Cancel
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button"
+        [disabled]="authForm.invalid || isRegistrationButtonDisabled"
+        (click)="onSingUpButton()"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
