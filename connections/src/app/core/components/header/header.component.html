@@ -20,5 +20,7 @@
     *ngIf="!(night$ | async)"
     class="theme-icon"
   ></tui-icon>
+  <button tuiButton tuiSlot="right" (click)="toProfilePage()">Profile</button>
+
   <button tuiButton tuiSlot="right" (click)="toLoginPage()">Login</button>
 </tui-app-bar>

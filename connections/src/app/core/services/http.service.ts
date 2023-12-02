@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { catchError, EMPTY, Observable, switchMap } from 'rxjs';
 import {
   SignInBody,
@@ -8,6 +12,10 @@ import {
   SignUpResponse,
 } from 'src/app/shared/models/auth-models';
 import { HttpErrorService } from './http-error.service';
+import {
+  EditProfileBody,
+  ProfileResponseBody,
+} from 'src/app/shared/models/profile-models';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,14 +26,16 @@ export class HttpService {
 
   singInPath = '/login';
 
+  profilePath = '/profile';
+
   constructor(
     private httpClient: HttpClient,
     private httpError: HttpErrorService
   ) {}
 
-  public signUp(params: SignUpBody): Observable<SignUpResponse> {
+  public signUp(params: SignUpBody) {
     return this.httpClient
-      .post<SignUpResponse>(this.url + this.signUpPath, params)
+      .post(this.url + this.signUpPath, params)
       .pipe(
         catchError((err: HttpErrorResponse) =>
           this.handleHttpError<SignUpResponse>(err)
@@ -46,5 +56,33 @@ export class HttpService {
           this.handleHttpError<SignInResponseBody>(err)
         )
       );
+  }
+
+  getProfileData({
+    headers,
+  }: {
+    headers: { [key: string]: string };
+  }): Observable<ProfileResponseBody> {
+    return this.httpClient.get<ProfileResponseBody>(
+      this.url + this.profilePath,
+      {
+        headers,
+      }
+    );
+  }
+
+  public editProfile(
+    {
+      headers,
+    }: {
+      headers: { [key: string]: string };
+    },
+    params: EditProfileBody
+  ) {
+    return this.httpClient
+      .put<SignUpResponse>(this.url + this.profilePath, params, {
+        headers,
+      })
+      .pipe(catchError(async (err) => this.httpError.catchErrors(err)));
   }
 }

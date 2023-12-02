@@ -1,15 +1,25 @@
-import {  Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: 'signup',
-    loadComponent: () => import('./auth/components/signup/signup.component').then((m) => m.SignupComponent),
+    loadComponent: () =>
+      import('./auth/components/signup/signup.component').then(
+        (m) => m.SignupComponent
+      ),
   },
 
   {
     path: 'signin',
-    loadComponent: () => import('./auth/components/signin/signin.component').then((m) => m.SigninComponent),
+    loadComponent: () =>
+      import('./auth/components/signin/signin.component').then(
+        (m) => m.SigninComponent
+      ),
   },
-
-
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./core/profile/profile/profile.component').then(
+        (m) => m.ProfileComponent
+      ),
+  },
 ];
-

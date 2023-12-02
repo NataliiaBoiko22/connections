@@ -25,11 +25,10 @@ import {
   TuiInputPasswordModule,
 } from '@taiga-ui/kit';
 import { TUI_VALIDATION_ERRORS } from '@taiga-ui/kit';
-import { interval, map, of, scan, startWith } from 'rxjs';
-import { tuiIsFalsy, TuiValidationError } from '@taiga-ui/cdk';
+import { interval, map, scan, startWith } from 'rxjs';
+import { tuiIsFalsy } from '@taiga-ui/cdk';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { CommonModule } from '@angular/common';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TuiCardModule } from '@taiga-ui/experimental';
 @Component({
   selector: 'app-signup',

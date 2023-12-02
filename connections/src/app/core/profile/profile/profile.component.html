@@ -1,1 +1,74 @@
-<p>profile works!</p>
+<div tuiCard class="profile">
+  <ng-container *ngIf="profileData$ | async as profileData">
+    <h3 class="profile__title">Your profile</h3>
+    <div *ngIf="profileData" class="profile__info">
+      <p>
+        Email:
+        <span class="profile__info-data">{{ profileData?.email?.S }}</span>
+      </p>
+      <ng-container *ngIf="!isEditing">
+        <p>
+          User name:
+          <span class="profile__info-data">{{ profileData?.name?.S }}</span>
+        </p>
+      </ng-container>
+      <ng-container *ngIf="isEditing">
+        <form class="profile__form" [formGroup]="editProfileForm">
+          <tui-input
+            formControlName="name"
+            tuiHintContent="A tooltip"
+            ngDefaultControl
+          >
+            Enter new name
+            <input
+              placeholder="Enter your firstname"
+              tuiTextfield
+              type="text"
+            />
+            <span class="tui-required"></span>
+          </tui-input>
+          <tui-error
+            formControlName="name"
+            [error]="[] | tuiFieldError | async"
+          ></tui-error>
+        </form>
+      </ng-container>
+
+      <p>
+        User id:
+        <span class="profile__info-data">{{ profileData?.uid?.S }}</span>
+      </p>
+      <p>
+        Creation time:
+        <span class="profile__info-data">{{ profileData?.createdAt?.S }}</span>
+      </p>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isEditing">
+    <button tuiButton size="m" (click)="onEditClick()">Edit</button>
+  </ng-container>
+  <ng-container *ngIf="isEditing">
+    <div class="tui-form__buttons registration__buttons">
+      <button
+        appearance="flat"
+        size="m"
+        tuiButton
+        type="button"
+        class="tui-form__button"
+        (click)="onCancelButton()"
+      >
+        Cancel
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button"
+        [disabled]="editProfileForm.invalid"
+        (click)="onSaveButton()"
+      >
+        Save
+      </button>
+    </div>
+  </ng-container>
+</div>

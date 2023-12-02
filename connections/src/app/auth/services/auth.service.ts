@@ -19,11 +19,8 @@ export class AuthService {
   ) {}
 
   signUp(data: SignUpBody): void {
-    console.log('data', data);
-
     this.httpService.signUp(data).subscribe((resp) => {
       if (resp === null) {
-        console.log('HOORAY');
         this.router.navigate(['signin']);
         this.dialogService
           .open('Account Created Successfully!', {
