@@ -28,6 +28,8 @@ export class HttpService {
 
   profilePath = '/profile';
 
+  deleteProfilePath = '/logout';
+
   constructor(
     private httpClient: HttpClient,
     private httpError: HttpErrorService
@@ -35,7 +37,7 @@ export class HttpService {
 
   public signUp(params: SignUpBody) {
     return this.httpClient
-      .post(this.url + this.signUpPath, params)
+      .post<SignUpResponse>(this.url + this.signUpPath, params)
       .pipe(
         catchError((err: HttpErrorResponse) =>
           this.handleHttpError<SignUpResponse>(err)
@@ -81,6 +83,14 @@ export class HttpService {
   ) {
     return this.httpClient
       .put<SignUpResponse>(this.url + this.profilePath, params, {
+        headers,
+      })
+      .pipe(catchError(async (err) => this.httpError.catchErrors(err)));
+  }
+
+  public deleteLogin({ headers }: { headers: { [key: string]: string } }) {
+    return this.httpClient
+      .delete(this.url + this.deleteProfilePath, {
         headers,
       })
       .pipe(catchError(async (err) => this.httpError.catchErrors(err)));

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TuiDialogService } from '@taiga-ui/core';
-import { SignUpBody } from 'src/app/shared/models/auth-models';
 import {
   EditProfileBody,
   ProfileResponseBody,
 } from 'src/app/shared/models/profile-models';
-import { setProfileData, updateName } from 'src/app/Store/actions/actions';
+import {
+  deleteLogin,
+  setProfileData,
+  updateName,
+} from 'src/app/Store/actions/actions';
 import { HttpService } from './http.service';
 
 @Injectable({
@@ -17,7 +19,6 @@ export class ProfileService {
   constructor(
     private httpService: HttpService,
     private store: Store,
-    private router: Router,
     private dialogService: TuiDialogService
   ) {}
 
@@ -76,5 +77,33 @@ export class ProfileService {
           .subscribe();
       }
     });
+  }
+
+  logout(userId: string, userEmail: string, authToken: string) {
+    const headers = {
+      'rs-uid': userId,
+      'rs-email': userEmail,
+      Authorization: `Bearer ${authToken}`,
+    };
+    this.httpService.deleteLogin({ headers }).subscribe((resp) => {
+      if (resp === null) {
+        this.store.dispatch(deleteLogin());
+        this.dialogService
+          .open('You have logged out successfully!', {
+            label: 'Success',
+            size: 's',
+          })
+          .subscribe();
+      }
+    });
+    localStorage.clear();
+    sessionStorage.clear();
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
   }
 }

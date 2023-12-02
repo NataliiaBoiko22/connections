@@ -14,3 +14,4 @@ export const updateName = createAction(
   '[Profile] Update Name',
   props<{ name: string }>()
 );
+export const deleteLogin = createAction('[Profile] Delete Login');

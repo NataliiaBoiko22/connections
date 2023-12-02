@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { setProfileData, updateName } from '../actions/actions';
+import { deleteLogin, setProfileData, updateName } from '../actions/actions';
 import { initialState } from '../state.models';
 
 export const connectionsReducer = createReducer(
@@ -14,6 +14,14 @@ export const connectionsReducer = createReducer(
       profile: {
         ...state.profile,
         name: { S: name },
+      },
+    };
+  }),
+  on(deleteLogin, (state) => {
+    return {
+      ...state,
+      profile: {
+        ...initialState.profile,
       },
     };
   })

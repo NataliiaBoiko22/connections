@@ -39,6 +39,7 @@ import { select, Store } from '@ngrx/store';
 import { setProfileData } from 'src/app/Store/actions/actions';
 import { selectProfileData } from 'src/app/Store/selectors/selectors';
 import { ProfileService } from '../../services/profile.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -73,7 +74,11 @@ export class ProfileComponent {
   userId = localStorage.getItem('uid') as string;
   userEmail = localStorage.getItem('email') as string;
   authToken = localStorage.getItem('token') as string;
-  constructor(private store: Store, private profileService: ProfileService) {
+  constructor(
+    private store: Store,
+    private profileService: ProfileService,
+    private router: Router
+  ) {
     if (this.userId && this.userEmail && this.authToken) {
       this.profileService.getProfile(
         this.userId,
@@ -116,5 +121,9 @@ export class ProfileComponent {
       data
     );
     this.isEditing = false;
+  }
+  onLogoutButton() {
+    this.profileService.logout(this.userId, this.userEmail, this.authToken);
+    this.router.navigate(['signin']);
   }
 }
