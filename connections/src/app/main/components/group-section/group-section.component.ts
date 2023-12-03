@@ -1,14 +1,10 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-} from '@angular/core';
-import { select, Store } from '@ngrx/store';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
 import { GroupListResponseBody } from 'src/app/shared/models/groups-model';
 import { selectGroupList } from 'src/app/Store/selectors/selectors';
+import { CountdownService } from '../../services/countdown.service';
 import { GroupService } from '../../services/group.service';
 
 @Component({
@@ -26,20 +22,17 @@ export class GroupSectionComponent implements OnInit {
   constructor(
     private groupService: GroupService,
     private store: Store,
-    private cd: ChangeDetectorRef
+    private countdownService: CountdownService
   ) {}
 
   ngOnInit(): void {
-    this.groupService.fetchGroups();
     this.groupListData$ = this.store.select(selectGroupList);
     console.log('this.groupListData$', this.groupListData$);
+    this.countdownService.getCountdown().subscribe((countdown) => {
+      this.countdown$.next(countdown);
+    });
   }
 
-  // onUpdateButton(): void {
-  //   this.groupService.fetchGroups();
-  //   this.groupListData$ = this.store.select(selectGroupList);
-  //   console.log('this.groupListData$', this.groupListData$);
-  // }
   onUpdateGroupsButton(): void {
     this.groupService.fetchGroups();
     this.groupListData$ = this.store.select(selectGroupList);
@@ -49,17 +42,20 @@ export class GroupSectionComponent implements OnInit {
 
   private startCountdown(): void {
     this.countdown$.next(60);
+
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
+
     this.countdownSubscription = interval(1000).subscribe(() => {
-      this.countdown$.next(this.countdown$.value - 1);
-      if (this.countdown$.value <= 0) {
-        if (this.countdownSubscription) {
-          this.countdownSubscription.unsubscribe();
-        }
+      const countdownValue = this.countdown$.value - 1;
+      this.countdown$.next(countdownValue);
+
+      if (countdownValue <= 0 && this.countdownSubscription) {
+        this.countdownSubscription.unsubscribe();
       }
-      this.cd.detectChanges();
+
+      this.countdownService.setCountdown(countdownValue);
     });
   }
 }

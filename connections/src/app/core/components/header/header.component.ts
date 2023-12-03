@@ -50,14 +50,17 @@ export class HeaderComponent extends AbstractTuiThemeSwitcher {
   get mode(): TuiBrightness | null {
     return this.night.nightTheme$ ? 'onDark' : 'onLight';
   }
-  toLoginPage() {
+  toLoginPage(): void {
     this.router.navigate(['signin']);
   }
-  toProfilePage() {
+  toProfilePage(): void {
     this.router.navigate(['profile']);
   }
   onToggleChange(): void {
     this.night.toggle();
     // this.nightMode = newValue;
+  }
+  toManePage(): void {
+    this.router.navigate(['']);
   }
 }

@@ -20,7 +20,6 @@ export class PeopleSectionComponent {
   constructor(private peopleService: PeopleService, private store: Store) {}
 
   ngOnInit(): void {
-    this.peopleService.fetchPeople();
     this.peopleListData$ = this.store.select(selectPeopleList);
     console.log('this.peopleListData$', this.peopleListData$);
   }
