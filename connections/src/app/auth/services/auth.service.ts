@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TuiDialogService } from '@taiga-ui/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SignInBody, SignUpBody } from 'src/app/shared/models/auth-models';
 
@@ -12,6 +12,7 @@ export class AuthService {
   public token = '';
   isSingInFromStorage = !!localStorage.getItem('token');
   isSingIn$ = new BehaviorSubject(this.isSingInFromStorage);
+
   constructor(
     private httpService: HttpService,
     private router: Router,
@@ -40,6 +41,12 @@ export class AuthService {
         localStorage.setItem('uid', respSingIn.uid);
         localStorage.setItem('email', data.email);
         // this.router.navigate(['main']);
+        this.dialogService
+          .open('Welcome to Connections', {
+            label: 'Success',
+            size: 's',
+          })
+          .subscribe();
       }
     });
   }

@@ -15,3 +15,7 @@ export const updateName = createAction(
   props<{ name: string }>()
 );
 export const deleteLogin = createAction('[Profile] Delete Login');
+export const setEmailError = createAction(
+  '[Email Error] Set Email Error',
+  props<{ emailError: boolean }>()
+);

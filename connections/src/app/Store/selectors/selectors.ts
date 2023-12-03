@@ -8,3 +8,8 @@ export const selectProfileData = createSelector(
   selectConnectionsState,
   (state) => state.profile
 );
+
+export const selectEmailError = createSelector(
+  selectConnectionsState,
+  (state) => state.emailError
+);

@@ -2,6 +2,7 @@ import { ProfileResponseBody } from '../shared/models/profile-models';
 
 export interface ConnectionsState {
   profile: ProfileResponseBody;
+  emailError: boolean;
 }
 
 export const initialState: ConnectionsState = {
@@ -19,4 +20,5 @@ export const initialState: ConnectionsState = {
       S: '',
     },
   },
+  emailError: false,
 };

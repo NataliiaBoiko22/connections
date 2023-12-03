@@ -29,15 +29,13 @@
           formControlName="email"
           tuiHintContent="A tooltip"
           [tuiTextfieldCleaner]="true"
+          (input)="onEmailInputChange()"
         >
           Enter an email
           <input autocomplete="email" tuiTextfield type="email" />
           <span class="tui-required"></span>
         </tui-input>
-        <tui-error
-          formControlName="email"
-          [error]="[] | tuiFieldError | async"
-        ></tui-error>
+        <tui-error [error]="getError() | async"></tui-error>
       </label>
     </div>
 
@@ -67,7 +65,11 @@
         tuiButton
         type="submit"
         class="tui-form__button"
-        [disabled]="authForm.invalid || isRegistrationButtonDisabled"
+        [disabled]="
+          authForm.invalid ||
+          isRegistrationButtonDisabled ||
+          ((emailError$ | async) ?? false)
+        "
         (click)="onSingUpButton()"
       >
         Submit

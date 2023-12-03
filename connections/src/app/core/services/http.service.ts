@@ -16,6 +16,9 @@ import {
   EditProfileBody,
   ProfileResponseBody,
 } from 'src/app/shared/models/profile-models';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { Store } from '@ngrx/store';
+import { setEmailError } from 'src/app/Store/actions/actions';
 @Injectable({
   providedIn: 'root',
 })
@@ -32,7 +35,8 @@ export class HttpService {
 
   constructor(
     private httpClient: HttpClient,
-    private httpError: HttpErrorService
+    private httpError: HttpErrorService,
+    private store: Store
   ) {}
 
   public signUp(params: SignUpBody) {
@@ -47,6 +51,8 @@ export class HttpService {
 
   private handleHttpError<T>(err: HttpErrorResponse): Observable<T> {
     console.log('err', err);
+    this.store.dispatch(setEmailError({ emailError: true }));
+
     return this.httpError.catchErrors(err).pipe(switchMap(() => EMPTY));
   }
 

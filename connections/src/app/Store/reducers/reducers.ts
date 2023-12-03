@@ -1,5 +1,10 @@
 import { createReducer, on } from '@ngrx/store';
-import { deleteLogin, setProfileData, updateName } from '../actions/actions';
+import {
+  deleteLogin,
+  setEmailError,
+  setProfileData,
+  updateName,
+} from '../actions/actions';
 import { initialState } from '../state.models';
 
 export const connectionsReducer = createReducer(
@@ -24,5 +29,10 @@ export const connectionsReducer = createReducer(
         ...initialState.profile,
       },
     };
-  })
+  }),
+
+  on(setEmailError, (state, { emailError }) => ({
+    ...state,
+    emailError: emailError,
+  }))
 );

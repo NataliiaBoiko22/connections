@@ -25,11 +25,25 @@ import {
   TuiInputPasswordModule,
 } from '@taiga-ui/kit';
 import { TUI_VALIDATION_ERRORS } from '@taiga-ui/kit';
-import { interval, map, scan, startWith } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  forkJoin,
+  interval,
+  map,
+  Observable,
+  of,
+  scan,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { tuiIsFalsy } from '@taiga-ui/cdk';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { CommonModule } from '@angular/common';
 import { TuiCardModule } from '@taiga-ui/experimental';
+import { Store } from '@ngrx/store';
+import { selectEmailError } from 'src/app/Store/selectors/selectors';
+import { setEmailError } from 'src/app/Store/actions/actions';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -82,6 +96,7 @@ import { TuiCardModule } from '@taiga-ui/experimental';
 })
 export class SignupComponent {
   isRegistrationButtonDisabled = false;
+  emailError$ = this.store.select(selectEmailError);
   patterns = {
     PATTERN_NAME: /^[a-z0-9]+$/,
     PATTERN_PASSWORD:
@@ -98,25 +113,36 @@ export class SignupComponent {
 
   // controlName = this.authForm.get('name') as FormControl;
 
-  // controlEmail = this.authForm.get('email') as FormControl;
+  controlEmail = this.authForm.get('email') as FormControl;
 
   // controlPassword = this.authForm.get('password') as FormControl;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private store: Store) {
     this.authForm.valueChanges.subscribe(() => {
       this.authForm.markAsTouched();
     });
   }
 
   onSingUpButton(): void {
-    this.isRegistrationButtonDisabled = true;
+    // this.isRegistrationButtonDisabled = true;
+    // this.emailError = false;
     if (this.authForm.invalid) {
       return;
     }
     const data = this.authForm.value as SignUpBody;
     this.authService.signUp(data);
-    setTimeout(() => {
-      this.isRegistrationButtonDisabled = false;
-    }, 2000);
+  }
+  onEmailInputChange(): void {
+    // Сбросить ошибки валидации при изменении значения поля email
+    this.controlEmail.setErrors(null);
+    this.store.dispatch(setEmailError({ emailError: false }));
+  }
+  getError(): Observable<string | null> {
+    return this.emailError$.pipe(
+      switchMap((emailError) => {
+        const fieldError = this.controlEmail?.getError('email');
+        return of(emailError ? emailError : fieldError ? fieldError : null);
+      })
+    ) as Observable<string | null>;
   }
 }
