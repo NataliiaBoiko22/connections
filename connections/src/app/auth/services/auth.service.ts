@@ -40,7 +40,7 @@ export class AuthService {
         localStorage.setItem('token', respSingIn.token);
         localStorage.setItem('uid', respSingIn.uid);
         localStorage.setItem('email', data.email);
-        // this.router.navigate(['main']);
+        this.router.navigate(['']);
         this.dialogService
           .open('Welcome to Connections', {
             label: 'Success',

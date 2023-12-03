@@ -2,6 +2,8 @@ import { createReducer, on } from '@ngrx/store';
 import {
   deleteLogin,
   setEmailError,
+  setGroupListData,
+  setPeopleListData,
   setProfileData,
   updateName,
 } from '../actions/actions';
@@ -34,5 +36,13 @@ export const connectionsReducer = createReducer(
   on(setEmailError, (state, { emailError }) => ({
     ...state,
     emailError: emailError,
+  })),
+  on(setGroupListData, (state, { data }) => ({
+    ...state,
+    groupList: data,
+  })),
+  on(setPeopleListData, (state, { data }) => ({
+    ...state,
+    peopleList: data,
   }))
 );

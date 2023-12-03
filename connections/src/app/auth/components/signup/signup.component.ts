@@ -69,7 +69,6 @@ import { setEmailError } from 'src/app/Store/actions/actions';
     TuiErrorModule,
     TuiFieldErrorPipeModule,
     TuiTextfieldControllerModule,
-    TuiDialogModule,
   ],
   providers: [
     {

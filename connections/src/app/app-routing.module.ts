@@ -22,4 +22,11 @@ export const routes: Routes = [
         (m) => m.ProfileComponent
       ),
   },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./main/pages/main-page/main-page.component').then(
+        (m) => m.MainPageComponent
+      ),
+  },
 ];

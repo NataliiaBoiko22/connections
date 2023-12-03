@@ -13,3 +13,11 @@ export const selectEmailError = createSelector(
   selectConnectionsState,
   (state) => state.emailError
 );
+export const selectGroupList = createSelector(
+  selectConnectionsState,
+  (state) => state.groupList
+);
+export const selectPeopleList = createSelector(
+  selectConnectionsState,
+  (state) => state.peopleList
+);

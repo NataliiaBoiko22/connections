@@ -1,0 +1,10 @@
+.people-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  border: 5px solid green;
+  width: 100%;
+  height: auto;
+  flex-grow: 1;
+}

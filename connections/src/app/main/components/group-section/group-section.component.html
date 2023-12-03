@@ -1,0 +1,39 @@
+<!-- <div class="group-wrapper">
+  <span> THIS IS GROUP LIST SECTION</span>
+  <ng-container *ngIf="groupListData$ | async as groupListData">
+    <div *ngIf="groupListData" class="profile__info">
+      <div>{{ groupListData.Items }}</div>
+    </div>
+  </ng-container>
+</div> -->
+<div class="group-wrapper">
+  <button
+    size="m"
+    tuiButton
+    type="submit"
+    class="tui-form__button"
+    (click)="onUpdateGroupsButton()"
+    [disabled]="countdown$ | async"
+  >
+    Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
+    <div id="countdown"></div>
+  </button>
+
+  <span> THIS IS GROUP LIST SECTION</span>
+  <ng-container *ngIf="groupListData$ | async as groupListData">
+    <div *ngIf="groupListData.Items.length > 0" class="profile__info">
+      <ul
+        class="tui-list tui-list_large"
+        *ngFor="let item of groupListData.Items"
+      >
+        <li class="tui-list__item">{{ item.name.S }}</li>
+
+        <!-- Add other fields you want to display -->
+      </ul>
+    </div>
+    <div *ngIf="groupListData.Items.length === 0">
+      <!-- Handle case when there are no items -->
+      No items available.
+    </div>
+  </ng-container>
+</div>

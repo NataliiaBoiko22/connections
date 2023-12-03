@@ -1,0 +1,12 @@
+.group-wrapper {
+  display: flex;
+  flex-direction: column;
+  border: 5px solid blue;
+  width: 100%;
+  height: auto;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+#countdown {
+  display: none;
+}

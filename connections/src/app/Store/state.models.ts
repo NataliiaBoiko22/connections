@@ -1,8 +1,12 @@
+import { GroupListResponseBody } from '../shared/models/groups-model';
+import { PeopleListResponseBody } from '../shared/models/people-models';
 import { ProfileResponseBody } from '../shared/models/profile-models';
 
 export interface ConnectionsState {
   profile: ProfileResponseBody;
   emailError: boolean;
+  groupList: GroupListResponseBody;
+  peopleList: PeopleListResponseBody;
 }
 
 export const initialState: ConnectionsState = {
@@ -21,4 +25,12 @@ export const initialState: ConnectionsState = {
     },
   },
   emailError: false,
+  groupList: {
+    Count: 0,
+    Items: [],
+  },
+  peopleList: {
+    Count: 0,
+    Items: [],
+  },
 };

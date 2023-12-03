@@ -33,7 +33,7 @@ export class ProfileService {
       next: (data: ProfileResponseBody) => {
         this.store.dispatch(setProfileData({ data }));
       },
-      error: (error: any) => {
+      error: (error: Error) => {
         console.error('Failed to fetch profile data', error);
       },
     });

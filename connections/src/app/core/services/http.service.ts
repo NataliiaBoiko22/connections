@@ -19,6 +19,8 @@ import {
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Store } from '@ngrx/store';
 import { setEmailError } from 'src/app/Store/actions/actions';
+import { GroupListResponseBody } from 'src/app/shared/models/groups-model';
+import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
 @Injectable({
   providedIn: 'root',
 })
@@ -32,6 +34,10 @@ export class HttpService {
   profilePath = '/profile';
 
   deleteProfilePath = '/logout';
+
+  groupsListPath = '/groups/list';
+
+  peopleListPath = '/users';
 
   constructor(
     private httpClient: HttpClient,
@@ -100,5 +106,34 @@ export class HttpService {
         headers,
       })
       .pipe(catchError(async (err) => this.httpError.catchErrors(err)));
+  }
+
+  getGroupList({
+    headers,
+  }: {
+    headers: { [key: string]: string };
+  }): Observable<GroupListResponseBody> {
+    console.log('getGroupList from httpService');
+    return this.httpClient.get<GroupListResponseBody>(
+      this.url + this.groupsListPath,
+      {
+        headers,
+      }
+    );
+  }
+
+  getPeopleList({
+    headers,
+  }: {
+    headers: { [key: string]: string };
+  }): Observable<PeopleListResponseBody> {
+    console.log('getPeopleList from httpService');
+
+    return this.httpClient.get<PeopleListResponseBody>(
+      this.url + this.peopleListPath,
+      {
+        headers,
+      }
+    );
   }
 }

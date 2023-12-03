@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TuiDialogService } from '@taiga-ui/core';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { HttpError } from 'src/app/shared/models/http';
+import { HttpError } from 'src/app/shared/models/http-models';
 
 @Injectable({
   providedIn: 'root',

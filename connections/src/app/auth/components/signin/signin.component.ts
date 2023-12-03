@@ -55,7 +55,6 @@ import { RouterModule } from '@angular/router';
     TuiErrorModule,
     TuiFieldErrorPipeModule,
     TuiTextfieldControllerModule,
-    TuiDialogModule,
   ],
 })
 export class SigninComponent {
