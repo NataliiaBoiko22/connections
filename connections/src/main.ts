@@ -20,6 +20,7 @@ import { provideStore, StoreModule } from '@ngrx/store';
 import { EffectsModule, provideEffects } from '@ngrx/effects';
 import { connectionsReducer } from './app/Store/reducers/reducers';
 import { ConnectionsEffects } from './app/Store/effects/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -36,7 +37,10 @@ bootstrapApplication(AppComponent, {
       TuiThemeNightModule,
       TuiModeModule,
       StoreModule.forRoot({}),
-      EffectsModule.forRoot([ConnectionsEffects])
+      EffectsModule.forRoot([ConnectionsEffects]),
+      StoreDevtoolsModule.instrument({
+        maxAge: 25,
+      })
     ),
     provideStore(),
     provideEffects(),

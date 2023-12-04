@@ -3,7 +3,6 @@ import {
   EditProfileBody,
   ProfileResponseBody,
 } from 'src/app/shared/models/profile-models';
-import { HttpService } from '../../services/http.service';
 import {
   TuiAlertModule,
   TuiButtonModule,
@@ -20,8 +19,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../../auth/services/auth.service';
-import { SignUpBody } from 'src/app/shared/models/auth-models';
 import { NotificationComponent } from 'src/app/shared/components/notification/notification.component';
 import { TuiErrorModule } from '@taiga-ui/core';
 import {
@@ -29,16 +26,13 @@ import {
   TuiInputModule,
   TuiInputPasswordModule,
 } from '@taiga-ui/kit';
-import { TUI_VALIDATION_ERRORS } from '@taiga-ui/kit';
-import { interval, map, Observable, scan, startWith } from 'rxjs';
-import { tuiIsFalsy } from '@taiga-ui/cdk';
+import { Observable, take } from 'rxjs';
 import { TuiTextfieldControllerModule } from '@taiga-ui/core';
 import { CommonModule } from '@angular/common';
 import { TuiCardModule } from '@taiga-ui/experimental';
 import { select, Store } from '@ngrx/store';
-import { setProfileData } from 'src/app/Store/actions/actions';
+import { deleteLogin, updateName } from 'src/app/Store/actions/actions';
 import { selectProfileData } from 'src/app/Store/selectors/selectors';
-import { ProfileService } from '../../services/profile.service';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-profile',
@@ -71,29 +65,27 @@ import { Router } from '@angular/router';
 export class ProfileComponent {
   public profileData$!: Observable<ProfileResponseBody>;
   isEditing = false;
-  userId = localStorage.getItem('uid') as string;
-  userEmail = localStorage.getItem('email') as string;
-  authToken = localStorage.getItem('token') as string;
-  constructor(
-    private store: Store,
-    private profileService: ProfileService,
-    private router: Router
-  ) {
-    if (this.userId && this.userEmail && this.authToken) {
-      this.profileService.getProfile(
-        this.userId,
-        this.userEmail,
-        this.authToken
-      );
-      this.profileData$ = this.store
-        .select(selectProfileData)
-        .pipe(map((data) => this.profileService.transformProfileData(data)));
-    } else {
-      console.error('User data not found in local storage');
-    }
-  }
+  constructor(private store: Store, private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.store.pipe(select(selectProfileData), take(1)).subscribe((data) => {
+      console.log('data from selectProfileData', data);
+      const isProfileDataEmpty = Object.values(data).every((value) => {
+        if (value && typeof value === 'object') {
+          return Object.entries(value).every(([key, innerValue]) => {
+            return key === 'S' && innerValue === '';
+          });
+        }
+        return false;
+      });
+      if (isProfileDataEmpty) {
+        console.log('if (isProfileDataEmpty) ');
+        this.store.dispatch({ type: '[Profile] Set Profile Data' });
+      }
+    });
+
+    this.profileData$ = this.store.select(selectProfileData);
+  }
 
   onEditClick(): void {
     this.isEditing = true;
@@ -114,16 +106,21 @@ export class ProfileComponent {
       return;
     }
     const data = this.editProfileForm.value as EditProfileBody;
-    this.profileService.editUserProfile(
-      this.userId,
-      this.userEmail,
-      this.authToken,
-      data
-    );
+    this.store.dispatch(updateName(data));
     this.isEditing = false;
   }
   onLogoutButton() {
-    this.profileService.logout(this.userId, this.userEmail, this.authToken);
+    this.store.dispatch(deleteLogin());
+    localStorage.clear();
+    sessionStorage.clear();
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
+
     this.router.navigate(['signin']);
   }
 }

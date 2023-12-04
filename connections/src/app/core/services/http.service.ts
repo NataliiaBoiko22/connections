@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, EMPTY, Observable, switchMap } from 'rxjs';
 import {
   SignInBody,
@@ -16,7 +12,6 @@ import {
   EditProfileBody,
   ProfileResponseBody,
 } from 'src/app/shared/models/profile-models';
-import { AuthService } from 'src/app/auth/services/auth.service';
 import { Store } from '@ngrx/store';
 import { setEmailError } from 'src/app/Store/actions/actions';
 import { GroupListResponseBody } from 'src/app/shared/models/groups-model';
@@ -77,6 +72,8 @@ export class HttpService {
   }: {
     headers: { [key: string]: string };
   }): Observable<ProfileResponseBody> {
+    console.log('getProfileData from httpService');
+
     return this.httpClient.get<ProfileResponseBody>(
       this.url + this.profilePath,
       {
