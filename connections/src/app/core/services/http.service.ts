@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, EMPTY, Observable, switchMap } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
+import { catchError, EMPTY, Observable, switchMap, throwError } from 'rxjs';
 import {
   SignInBody,
   SignInResponseBody,
@@ -14,7 +18,11 @@ import {
 } from 'src/app/shared/models/profile-models';
 import { Store } from '@ngrx/store';
 import { setEmailError } from 'src/app/Store/actions/actions';
-import { GroupListResponseBody } from 'src/app/shared/models/groups-model';
+import {
+  GroupListResponseBody,
+  RequestGroupItem,
+  ResponseGroupID,
+} from 'src/app/shared/models/groups-model';
 import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
 @Injectable({
   providedIn: 'root',
@@ -23,16 +31,13 @@ export class HttpService {
   url = ' https://tasks.app.rs.school/angular';
 
   signUpPath = '/registration';
-
   singInPath = '/login';
-
-  profilePath = '/profile';
-
+  getProfilePath = '/profile';
   deleteProfilePath = '/logout';
-
-  groupsListPath = '/groups/list';
-
+  getGroupsListPath = '/groups/list';
+  postGroupsPath = '/groups/create';
   peopleListPath = '/users';
+  deleteGroupPath = '/groups/delete';
 
   constructor(
     private httpClient: HttpClient,
@@ -74,12 +79,15 @@ export class HttpService {
   }): Observable<ProfileResponseBody> {
     console.log('getProfileData from httpService');
 
-    return this.httpClient.get<ProfileResponseBody>(
-      this.url + this.profilePath,
-      {
+    return this.httpClient
+      .get<ProfileResponseBody>(this.url + this.getProfilePath, {
         headers,
-      }
-    );
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<ProfileResponseBody>(err)
+        )
+      );
   }
 
   public editProfile(
@@ -91,10 +99,14 @@ export class HttpService {
     params: EditProfileBody
   ) {
     return this.httpClient
-      .put<SignUpResponse>(this.url + this.profilePath, params, {
+      .put<SignUpResponse>(this.url + this.getProfilePath, params, {
         headers,
       })
-      .pipe(catchError(async (err) => this.httpError.catchErrors(err)));
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<SignUpResponse>(err)
+        )
+      );
   }
 
   public deleteLogin({ headers }: { headers: { [key: string]: string } }) {
@@ -102,35 +114,72 @@ export class HttpService {
       .delete(this.url + this.deleteProfilePath, {
         headers,
       })
-      .pipe(catchError(async (err) => this.httpError.catchErrors(err)));
+      .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 
-  getGroupList({
+  public getGroupList({
     headers,
   }: {
     headers: { [key: string]: string };
   }): Observable<GroupListResponseBody> {
     console.log('getGroupList from httpService');
-    return this.httpClient.get<GroupListResponseBody>(
-      this.url + this.groupsListPath,
-      {
+    return this.httpClient
+      .get<GroupListResponseBody>(this.url + this.getGroupsListPath, {
         headers,
-      }
-    );
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<GroupListResponseBody>(err)
+        )
+      );
   }
 
-  getPeopleList({
+  public getPeopleList({
     headers,
   }: {
     headers: { [key: string]: string };
   }): Observable<PeopleListResponseBody> {
     console.log('getPeopleList from httpService');
 
-    return this.httpClient.get<PeopleListResponseBody>(
-      this.url + this.peopleListPath,
-      {
+    return this.httpClient
+      .get<PeopleListResponseBody>(this.url + this.peopleListPath, {
         headers,
-      }
-    );
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<PeopleListResponseBody>(err)
+        )
+      );
+  }
+
+  public createNewGroup(
+    {
+      headers,
+    }: {
+      headers: { [key: string]: string };
+    },
+    params: RequestGroupItem
+  ): Observable<ResponseGroupID> {
+    console.log('createNewGroup from httpService');
+
+    return this.httpClient
+      .post<ResponseGroupID>(this.url + this.postGroupsPath, params, {
+        headers,
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<ResponseGroupID>(err)
+        )
+      );
+  }
+
+  public deleteGroup(
+    { headers }: { headers: { [key: string]: string } },
+    groupID: ResponseGroupID
+  ) {
+    const params = new HttpParams().set('groupID', groupID.groupID);
+    return this.httpClient
+      .delete(this.url + this.deleteGroupPath, { headers, params })
+      .pipe(catchError((err: any) => this.handleHttpError(err)));
   }
 }

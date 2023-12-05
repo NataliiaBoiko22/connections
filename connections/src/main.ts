@@ -10,7 +10,7 @@ import {
   TuiRootModule,
   TuiThemeNightModule,
 } from '@taiga-ui/core';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, isDevMode } from '@angular/core';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { routes } from './app/app-routing.module';
@@ -20,7 +20,10 @@ import { provideStore, StoreModule } from '@ngrx/store';
 import { EffectsModule, provideEffects } from '@ngrx/effects';
 import { connectionsReducer } from './app/Store/reducers/reducers';
 import { ConnectionsEffects } from './app/Store/effects/effects';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import {
+  provideStoreDevtools,
+  StoreDevtoolsModule,
+} from '@ngrx/store-devtools';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -37,12 +40,14 @@ bootstrapApplication(AppComponent, {
       TuiThemeNightModule,
       TuiModeModule,
       StoreModule.forRoot({}),
-      EffectsModule.forRoot([ConnectionsEffects]),
-      StoreDevtoolsModule.instrument({
-        maxAge: 25,
-      })
+      EffectsModule.forRoot([ConnectionsEffects])
     ),
+
     provideStore(),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: !isDevMode(),
+    }),
     provideEffects(),
   ],
 }).catch((err) => console.error(err));

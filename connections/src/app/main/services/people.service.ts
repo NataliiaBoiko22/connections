@@ -14,19 +14,19 @@ export class PeopleService {
 
   constructor(private httpService: HttpService, private store: Store) {}
 
-  fetchPeople(): void {
-    const headers = {
-      'rs-uid': this.userId,
-      'rs-email': this.userEmail,
-      Authorization: `Bearer ${this.authToken}`,
-    };
-    this.httpService.getPeopleList({ headers }).subscribe({
-      next: (data: PeopleListResponseBody) => {
-        this.store.dispatch(setPeopleListData({ data }));
-      },
-      error: (error: Error) => {
-        console.error('Failed to fetch groups', error);
-      },
-    });
-  }
+  // fetchPeople(): void {
+  //   const headers = {
+  //     'rs-uid': this.userId,
+  //     'rs-email': this.userEmail,
+  //     Authorization: `Bearer ${this.authToken}`,
+  //   };
+  //   this.httpService.getPeopleList({ headers }).subscribe({
+  //     next: (data: PeopleListResponseBody) => {
+  //       this.store.dispatch(setPeopleListData({ data }));
+  //     },
+  //     error: (error: Error) => {
+  //       console.error('Failed to fetch groups', error);
+  //     },
+  //   });
+  // }
 }

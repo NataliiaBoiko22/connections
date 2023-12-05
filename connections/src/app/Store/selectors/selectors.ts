@@ -21,3 +21,7 @@ export const selectPeopleList = createSelector(
   selectConnectionsState,
   (state) => state.peopleList
 );
+export const selectCreatedGroupList = createSelector(
+  selectConnectionsState,
+  (state) => state.createdGroupList
+);

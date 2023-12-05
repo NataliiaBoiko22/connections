@@ -15,17 +15,18 @@ import { PeopleService } from '../../services/people.service';
   imports: [CommonModule],
 })
 export class PeopleSectionComponent {
-  public peopleListData$!: Observable<PeopleListResponseBody>;
+  public peopleListData$ = this.store.select(selectPeopleList);
 
   constructor(private peopleService: PeopleService, private store: Store) {}
 
   ngOnInit(): void {
-    this.peopleListData$ = this.store.select(selectPeopleList);
+    this.store.dispatch({ type: '[People List] Set People List Data' });
+
     console.log('this.peopleListData$', this.peopleListData$);
   }
 
   onUpdateButton(): void {
-    this.peopleService.fetchPeople();
+    // this.peopleService.fetchPeople();
     this.peopleListData$ = this.store.select(selectPeopleList);
     console.log('this.peopleListData$', this.peopleListData$);
   }

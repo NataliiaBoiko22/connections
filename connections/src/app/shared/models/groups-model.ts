@@ -17,3 +17,15 @@ interface GroupItem {
     S: string;
   };
 }
+
+export interface RequestGroupItem {
+  name: string;
+}
+export interface ResponseGroupID {
+  groupID: string;
+}
+
+export interface CreatedGroupItem {
+  name: string;
+  groupID: string;
+}

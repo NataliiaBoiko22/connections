@@ -1,11 +1,3 @@
-<!-- <div class="group-wrapper">
-  <span> THIS IS GROUP LIST SECTION</span>
-  <ng-container *ngIf="groupListData$ | async as groupListData">
-    <div *ngIf="groupListData" class="profile__info">
-      <div>{{ groupListData.Items }}</div>
-    </div>
-  </ng-container>
-</div> -->
 <div class="group-wrapper">
   <button
     size="m"
@@ -13,10 +5,19 @@
     type="submit"
     class="tui-form__button"
     (click)="onUpdateGroupsButton()"
-    [disabled]="countdown$ | async"
+    [disabled]="isCountdownActive"
   >
     Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
     <div id="countdown"></div>
+  </button>
+  <button
+    size="m"
+    tuiButton
+    type="submit"
+    class="tui-form__button"
+    (click)="onOpenModalButton()"
+  >
+    Create
   </button>
 
   <span> THIS IS GROUP LIST SECTION</span>
@@ -26,14 +27,44 @@
         class="tui-list tui-list_large"
         *ngFor="let item of groupListData.Items"
       >
-        <li class="tui-list__item">{{ item.name.S }}</li>
-
-        <!-- Add other fields you want to display -->
+        <li class="tui-list__item">
+          <span>{{ item.name.S }}</span>
+          <button
+            *ngIf="isCurrentUserGroupCreator(item.createdBy.S)"
+            (click)="onDeleteGroup(item.id.S)"
+          >
+            ✖
+          </button>
+        </li>
       </ul>
     </div>
-    <div *ngIf="groupListData.Items.length === 0">
-      <!-- Handle case when there are no items -->
-      No items available.
+    <div>
+      <ul
+        class="tui-list tui-list_large"
+        *ngIf="createdGroupListData$ | async as createdGroupListData"
+      >
+        <li *ngFor="let groupItem of createdGroupListData">
+          <span>{{ groupItem.name }}</span>
+          <button (click)="onDeleteGroup(groupItem.groupID)">✖</button>
+        </li>
+      </ul>
     </div>
+
+    <div *ngIf="groupListData.Items.length === 0">No items available.</div>
   </ng-container>
 </div>
+<ng-template
+  let-observer
+  [tuiDialogOptions]="{ label: 'Create new group', size: 's' }"
+  [(tuiDialog)]="open"
+>
+  <form [formGroup]="createGroupForm" (ngSubmit)="observer.complete()">
+    <p>Please input name of your group</p>
+    <tui-input formControlName="name" tuiAutoFocus> Name of group </tui-input>
+    <p>
+      <button tuiButton type="submit" (click)="onCreateGroupButton()">
+        Ok
+      </button>
+    </p>
+  </form>
+</ng-template>

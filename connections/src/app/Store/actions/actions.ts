@@ -1,5 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { GroupListResponseBody } from 'src/app/shared/models/groups-model';
+import {
+  GroupListResponseBody,
+  ResponseGroupID,
+} from 'src/app/shared/models/groups-model';
 import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
 import { ProfileResponseBody } from 'src/app/shared/models/profile-models';
 
@@ -25,4 +28,20 @@ export const setGroupListData = createAction(
 export const setPeopleListData = createAction(
   '[People List] Set People List Data',
   props<{ data: PeopleListResponseBody }>()
+);
+export const createGroup = createAction(
+  '[Group] Create Group',
+  props<{ name: string }>()
+);
+export const createGroupSuccess = createAction(
+  '[Group] Create Group Success',
+  props<{ groupID: ResponseGroupID; name: string }>()
+);
+export const deleteGroup = createAction(
+  '[Group] Delete Group',
+  props<{ groupID: string }>()
+);
+export const deleteGroupSuccess = createAction(
+  '[Group] Delete Group Success',
+  props<{ groupID: string }>()
 );

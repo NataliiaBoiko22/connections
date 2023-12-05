@@ -59,7 +59,6 @@ import { RouterModule } from '@angular/router';
 })
 export class SigninComponent {
   patterns = {
-    PATTERN_NAME: /^[a-z0-9]+$/,
     PATTERN_PASSWORD:
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
   };

@@ -1,5 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
+import { CreatedGroupItem } from 'src/app/shared/models/groups-model';
 import {
+  createGroupSuccess,
+  deleteGroup,
   deleteLogin,
   setEmailError,
   setGroupListData,
@@ -44,5 +47,30 @@ export const connectionsReducer = createReducer(
   on(setPeopleListData, (state, { data }) => ({
     ...state,
     peopleList: data,
-  }))
+  })),
+  on(createGroupSuccess, (state, { groupID, name }) => {
+    const newGroupItem: CreatedGroupItem = { groupID: groupID.groupID, name };
+    const updatedGroupList = [...state.createdGroupList, newGroupItem];
+
+    return {
+      ...state,
+      createdGroupList: updatedGroupList,
+    };
+  }),
+  on(deleteGroup, (state, { groupID }) => {
+    const updatedGroups = state.groupList.Items.filter(
+      (group) => group.id.S !== groupID
+    );
+    const updatedOwnGroups = state.createdGroupList.filter(
+      (group) => group.groupID !== groupID
+    );
+    return {
+      ...state,
+      groupList: {
+        Count: updatedGroups.length,
+        Items: updatedGroups,
+      },
+      createdGroupList: updatedOwnGroups,
+    };
+  })
 );

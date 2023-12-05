@@ -17,7 +17,16 @@ import {
 } from 'rxjs';
 import { HttpService } from 'src/app/core/services/http.service';
 import { ProfileResponseBody } from 'src/app/shared/models/profile-models';
-import { setProfileData, updateName } from '../actions/actions';
+import {
+  createGroup,
+  createGroupSuccess,
+  deleteGroup,
+  deleteGroupSuccess,
+  setGroupListData,
+  setPeopleListData,
+  setProfileData,
+  updateName,
+} from '../actions/actions';
 import { selectProfileData } from '../selectors/selectors';
 
 @Injectable()
@@ -110,6 +119,87 @@ export class ConnectionsEffects {
       })
     )
   );
+
+  // loadGoupsListData$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType('[Group List] Set Group List Data'),
+  //     take(1),
+  //     mergeMap(() => {
+  //       const headers = this.createHeaders();
+  //       return this.httpService.getGroupList({ headers }).pipe(
+  //         map((data) => setGroupListData({ data })),
+  //         catchError(() => EMPTY)
+  //       );
+  //     })
+  //   )
+  // );
+  loadGoupsListData$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType('[Group List] Set Group List Data'),
+      exhaustMap(() => {
+        const headers = this.createHeaders();
+        return this.httpService.getGroupList({ headers }).pipe(
+          take(1),
+          map((data) => setGroupListData({ data })),
+          catchError(() => EMPTY)
+        );
+      })
+    )
+  );
+
+  loadPeopleListData$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType('[People List] Set People List Data'),
+      take(1),
+      mergeMap(() => {
+        const headers = this.createHeaders();
+        return this.httpService.getPeopleList({ headers }).pipe(
+          map((data) => setPeopleListData({ data })),
+          catchError(() => EMPTY)
+        );
+      })
+    )
+  );
+
+  createGroup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(createGroup),
+      exhaustMap((action) => {
+        const headers = this.createHeaders();
+        const params = { name: action.name };
+        return this.httpService.createNewGroup({ headers }, params).pipe(
+          tap((groupID) => console.log('createGroup groupID:', groupID)),
+          map((groupID) => createGroupSuccess({ groupID, name: action.name })),
+          catchError(() => EMPTY)
+        );
+      })
+    )
+  );
+
+  deleteGroup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteGroup),
+      exhaustMap((action) =>
+      {
+        const headers = this.createHeaders();
+        const params = { groupID: action.groupID };
+        return this.httpService.deleteGroup({ headers }, params).pipe(
+          take(1),
+          exhaustMap(() =>
+          {
+            this.dialogService
+              .open('Your group removed successfully!', {
+                label: 'Success',
+                size: 's',
+              })
+              .subscribe();
+            return of({ type: 'NO_ACTION' });
+          }),
+          catchError(() => of({ type: 'ERROR_ACTION' }))
+  
+        )
+      }
+  )))
   constructor(
     private actions$: Actions,
     private httpService: HttpService,

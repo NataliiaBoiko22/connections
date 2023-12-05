@@ -97,7 +97,7 @@ export class SignupComponent {
   isRegistrationButtonDisabled = false;
   emailError$ = this.store.select(selectEmailError);
   patterns = {
-    PATTERN_NAME: /^[a-z0-9]+$/,
+    PATTERN_NAME: /^[a-zA-Z\s]{1,40}$/,
     PATTERN_PASSWORD:
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
   };
