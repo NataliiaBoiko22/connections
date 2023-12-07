@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages';
 import {
   GroupListResponseBody,
   ResponseGroupID,
@@ -44,4 +45,18 @@ export const deleteGroup = createAction(
 export const deleteGroupSuccess = createAction(
   '[Group] Delete Group Success',
   props<{ groupID: string }>()
+);
+
+export const setGroupMessagesData = createAction(
+  '[Group Messages] Set Group Messages Data',
+  props<{ groupID: string }>()
+);
+export const setGroupMessagesDataSuccess = createAction(
+  '[Group Messages] Set Group Messages Data Success',
+  props<{ data: GroupMessagesResponseBody }>()
+);
+
+export const sendGroupMessagesData = createAction(
+  '[Group Messages] Send Group Messages Data',
+  props<{ groupID: string; message: string }>()
 );

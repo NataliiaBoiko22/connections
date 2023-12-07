@@ -4,9 +4,11 @@
     tuiButton
     type="submit"
     class="tui-form__button"
-    (click)="onUpdateButton()"
+    (click)="onUpdatePeopleButton()"
+    [disabled]="isCountdownActive"
   >
-    Update
+    Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
+    <div id="countdown"></div>
   </button>
   <span> THIS IS People LIST SECTION</span>
   <ng-container *ngIf="peopleListData$ | async as peopleListData">
@@ -17,11 +19,9 @@
       >
         <li class="tui-list__item">{{ item.name.S }}</li>
 
-        <!-- Add other fields you want to display -->
       </ul>
     </div>
     <div *ngIf="peopleListData.Items.length === 0">
-      <!-- Handle case when there are no items -->
       No items available.
     </div>
   </ng-container>

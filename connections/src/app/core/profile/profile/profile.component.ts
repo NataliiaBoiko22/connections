@@ -95,7 +95,10 @@ export class ProfileComponent {
     PATTERN_NAME: /^[a-z0-9]+$/,
   };
   editProfileForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    name: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.patterns.PATTERN_NAME),
+    ]),
   });
 
   onCancelButton(): void {

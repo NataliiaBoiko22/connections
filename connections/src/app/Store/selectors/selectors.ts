@@ -25,3 +25,7 @@ export const selectCreatedGroupList = createSelector(
   selectConnectionsState,
   (state) => state.createdGroupList
 );
+export const selectGroupMessages = createSelector(
+  selectConnectionsState,
+  (state) => state.groupMessages
+);

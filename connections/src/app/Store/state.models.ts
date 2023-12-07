@@ -1,3 +1,4 @@
+import { GroupMessagesResponseBody } from '../shared/models/group-messages';
 import {
   CreatedGroupItem,
   GroupListResponseBody,
@@ -11,6 +12,7 @@ export interface ConnectionsState {
   groupList: GroupListResponseBody;
   peopleList: PeopleListResponseBody;
   createdGroupList: CreatedGroupItem[];
+  groupMessages: GroupMessagesResponseBody;
 }
 
 export const initialState: ConnectionsState = {
@@ -38,4 +40,8 @@ export const initialState: ConnectionsState = {
     Items: [],
   },
   createdGroupList: [],
+  groupMessages: {
+    Count: 0,
+    Items: [],
+  },
 };

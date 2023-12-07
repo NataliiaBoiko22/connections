@@ -5,13 +5,19 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class CountdownService {
-  private countdown$ = new BehaviorSubject<number>(0);
-
-  setCountdown(value: number): void {
-    this.countdown$.next(value);
+  private countdownGroup$ = new BehaviorSubject<number>(0);
+  private countdownPeople$ = new BehaviorSubject<number>(0);
+  setCountdownGroups(value: number): void {
+    this.countdownGroup$.next(value);
+  }
+  setCountdownPeople(value: number): void {
+    this.countdownPeople$.next(value);
   }
 
-  getCountdown(): BehaviorSubject<number> {
-    return this.countdown$;
+  getCountdownGroups(): BehaviorSubject<number> {
+    return this.countdownGroup$;
+  }
+  getCountdownPeople(): BehaviorSubject<number> {
+    return this.countdownPeople$;
   }
 }

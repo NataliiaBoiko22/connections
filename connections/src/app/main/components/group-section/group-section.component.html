@@ -27,7 +27,7 @@
         class="tui-list tui-list_large"
         *ngFor="let item of groupListData.Items"
       >
-        <li class="tui-list__item">
+        <li class="tui-list__item" (click)="onGroupDialogPage(item.id.S)">
           <span>{{ item.name.S }}</span>
           <button
             *ngIf="isCurrentUserGroupCreator(item.createdBy.S)"

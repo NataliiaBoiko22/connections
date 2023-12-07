@@ -3,3 +3,7 @@ export interface HttpError {
   message: string;
   details?: string;
 }
+
+export interface RequestHeaders {
+  headers: { [key: string]: string };
+}

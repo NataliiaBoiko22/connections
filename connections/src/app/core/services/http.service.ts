@@ -4,7 +4,14 @@ import {
   HttpErrorResponse,
   HttpParams,
 } from '@angular/common/http';
-import { catchError, EMPTY, Observable, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  Observable,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
 import {
   SignInBody,
   SignInResponseBody,
@@ -24,6 +31,11 @@ import {
   ResponseGroupID,
 } from 'src/app/shared/models/groups-model';
 import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
+import {
+  GroupMessagesResponseBody,
+  RequestGroupMessagesBody,
+} from 'src/app/shared/models/group-messages';
+import { RequestHeaders } from 'src/app/shared/models/http-models';
 @Injectable({
   providedIn: 'root',
 })
@@ -38,7 +50,8 @@ export class HttpService {
   postGroupsPath = '/groups/create';
   peopleListPath = '/users';
   deleteGroupPath = '/groups/delete';
-
+  getGroupMessagesPath = '/groups/read';
+  postGroupMessagesPath = '/groups/append';
   constructor(
     private httpClient: HttpClient,
     private httpError: HttpErrorService,
@@ -72,11 +85,7 @@ export class HttpService {
       );
   }
 
-  getProfileData({
-    headers,
-  }: {
-    headers: { [key: string]: string };
-  }): Observable<ProfileResponseBody> {
+  getProfileData({ headers }: RequestHeaders): Observable<ProfileResponseBody> {
     console.log('getProfileData from httpService');
 
     return this.httpClient
@@ -90,14 +99,7 @@ export class HttpService {
       );
   }
 
-  public editProfile(
-    {
-      headers,
-    }: {
-      headers: { [key: string]: string };
-    },
-    params: EditProfileBody
-  ) {
+  public editProfile({ headers }: RequestHeaders, params: EditProfileBody) {
     return this.httpClient
       .put<SignUpResponse>(this.url + this.getProfilePath, params, {
         headers,
@@ -109,7 +111,7 @@ export class HttpService {
       );
   }
 
-  public deleteLogin({ headers }: { headers: { [key: string]: string } }) {
+  public deleteLogin({ headers }: RequestHeaders) {
     return this.httpClient
       .delete(this.url + this.deleteProfilePath, {
         headers,
@@ -119,9 +121,7 @@ export class HttpService {
 
   public getGroupList({
     headers,
-  }: {
-    headers: { [key: string]: string };
-  }): Observable<GroupListResponseBody> {
+  }: RequestHeaders): Observable<GroupListResponseBody> {
     console.log('getGroupList from httpService');
     return this.httpClient
       .get<GroupListResponseBody>(this.url + this.getGroupsListPath, {
@@ -136,9 +136,7 @@ export class HttpService {
 
   public getPeopleList({
     headers,
-  }: {
-    headers: { [key: string]: string };
-  }): Observable<PeopleListResponseBody> {
+  }: RequestHeaders): Observable<PeopleListResponseBody> {
     console.log('getPeopleList from httpService');
 
     return this.httpClient
@@ -153,11 +151,7 @@ export class HttpService {
   }
 
   public createNewGroup(
-    {
-      headers,
-    }: {
-      headers: { [key: string]: string };
-    },
+    { headers }: RequestHeaders,
     params: RequestGroupItem
   ): Observable<ResponseGroupID> {
     console.log('createNewGroup from httpService');
@@ -173,13 +167,37 @@ export class HttpService {
       );
   }
 
-  public deleteGroup(
-    { headers }: { headers: { [key: string]: string } },
+  public deleteGroup({ headers }: RequestHeaders, groupID: ResponseGroupID) {
+    const params = new HttpParams().set('groupID', groupID.groupID);
+    return this.httpClient
+      .delete(this.url + this.deleteGroupPath, { headers, params })
+      .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
+  }
+
+  public getGroupMessages(
+    { headers }: RequestHeaders,
     groupID: ResponseGroupID
   ) {
     const params = new HttpParams().set('groupID', groupID.groupID);
     return this.httpClient
-      .delete(this.url + this.deleteGroupPath, { headers, params })
-      .pipe(catchError((err: any) => this.handleHttpError(err)));
+      .get<GroupMessagesResponseBody>(this.url + this.getGroupMessagesPath, {
+        headers,
+        params,
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<GroupMessagesResponseBody>(err)
+        )
+      );
+  }
+  public sendGroupMessages(
+    body: RequestGroupMessagesBody,
+    headers: RequestHeaders
+  ) {
+    console.log('sendGroupMessages from httpService');
+
+    return this.httpClient
+      .post(this.url + this.postGroupMessagesPath, body, headers)
+      .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 }

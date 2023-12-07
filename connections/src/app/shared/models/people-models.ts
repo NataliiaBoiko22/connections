@@ -3,7 +3,7 @@ export interface PeopleListResponseBody {
   Items: PeopleItem[];
 }
 
-interface PeopleItem {
+export interface PeopleItem {
   name: {
     S: string;
   };

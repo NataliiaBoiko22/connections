@@ -7,18 +7,12 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { TuiButtonModule, TuiDialogModule } from '@taiga-ui/core';
 import { TuiInputModule } from '@taiga-ui/kit';
+import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 import {
-  BehaviorSubject,
-  interval,
-  Observable,
-  Subscription,
-  take,
-} from 'rxjs';
-import {
-  CreatedGroupItem,
   GroupListResponseBody,
   RequestGroupItem,
 } from 'src/app/shared/models/groups-model';
@@ -55,10 +49,11 @@ export class GroupSectionComponent implements OnInit {
   public countdown$ = new BehaviorSubject<number>(0);
   public isCountdownActive = false;
   showDeleteButton = false;
-  private countdownSubscription: Subscription | undefined;
+  private countdownSubscription!: Subscription;
   constructor(
     private store: Store,
-    private countdownService: CountdownService
+    private countdownService: CountdownService,
+    private router: Router
   ) {
     this.createGroupForm.valueChanges.subscribe(() => {
       this.createGroupForm.markAsTouched();
@@ -103,7 +98,7 @@ export class GroupSectionComponent implements OnInit {
     return createdBy === this.userId;
   }
   private observeCountdown() {
-    this.countdownService.getCountdown().subscribe((countdown) => {
+    this.countdownService.getCountdownGroups().subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
@@ -128,7 +123,7 @@ export class GroupSectionComponent implements OnInit {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdown(countdownValue);
+      this.countdownService.setCountdownGroups(countdownValue);
     });
   }
 
@@ -153,5 +148,9 @@ export class GroupSectionComponent implements OnInit {
     console.log('groupId', groupId);
     this.store.dispatch(deleteGroup({ groupID: groupId }));
     this.groupListData$ = this.store.select(selectGroupList);
+  }
+
+  onGroupDialogPage(groupID: string) {
+    this.router.navigate(['/group', groupID]);
   }
 }

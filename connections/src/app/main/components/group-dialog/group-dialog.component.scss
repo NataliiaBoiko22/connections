@@ -1,0 +1,20 @@
+.group-messages {
+  display: flex;
+  flex-direction: column;
+  &__form {
+    display: flex;
+    width: 100%;
+  }
+  &__form-input {
+    width: 500px;
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    border: 1px solid var(--tui-primary-hover);
+    border-radius: 5px;
+  }
+}

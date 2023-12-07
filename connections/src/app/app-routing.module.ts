@@ -29,4 +29,11 @@ export const routes: Routes = [
         (m) => m.MainPageComponent
       ),
   },
+  {
+    path: 'group/:groupID',
+    loadComponent: () =>
+      import('./main/components/group-dialog/group-dialog.component').then(
+        (m) => m.GroupDialogComponent
+      ),
+  },
 ];

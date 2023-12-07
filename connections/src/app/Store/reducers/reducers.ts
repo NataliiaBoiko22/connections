@@ -4,8 +4,11 @@ import {
   createGroupSuccess,
   deleteGroup,
   deleteLogin,
+  sendGroupMessagesData,
   setEmailError,
   setGroupListData,
+  setGroupMessagesData,
+  setGroupMessagesDataSuccess,
   setPeopleListData,
   setProfileData,
   updateName,
@@ -71,6 +74,28 @@ export const connectionsReducer = createReducer(
         Items: updatedGroups,
       },
       createdGroupList: updatedOwnGroups,
+    };
+  }),
+  on(setGroupMessagesDataSuccess, (state, { data }) => {
+    return {
+      ...state,
+      groupMessages: data,
+    };
+  }),
+  on(sendGroupMessagesData, (state, { groupID, message }) => {
+    return {
+      ...state,
+      groupMessages: {
+        Count: state.groupMessages.Count + 1,
+        Items: [
+          ...state.groupMessages.Items,
+          {
+            authorID: { S: new Date().toISOString() },
+            message: { S: message },
+            createdAt: { S: new Date().toLocaleString() },
+          },
+        ],
+      },
     };
   })
 );
