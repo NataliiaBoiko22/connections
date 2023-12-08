@@ -26,7 +26,8 @@
     type="submit"
     class="tui-form__button"
     (click)="onDeleteGroupsDialogButton()"
-    [disabled]="isCountdownActive"
+        *ngIf="isCurrentUserGroupCreator()"
+
   >
     Delete
     <div id="countdown"></div>
@@ -35,23 +36,15 @@
     <ul
       class="tui-list tui-list_large"
       *ngFor="let item of groupMessagesData.Items"
+      [ngClass]="
+        isCurrentUserMessage(item)
+          ? 'group-messages__message-right'
+          : 'group-messages__message-left'
+      "
     >
       <li class="tui-list__item group-messages__message">
         <span>{{ item.createdAt.S }}</span>
-        <span>Me</span>
-
-        <span>{{ item.message.S }}</span>
-      </li>
-    </ul>
-  </ng-container>
-  <ng-container *ngIf="groupMessagesData$ | async as groupMessagesData">
-    <ul
-      class="tui-list tui-list_large"
-      *ngFor="let item of groupMessagesData.Items"
-    >
-      <li class="tui-list__item group-messages__message">
-        <span>{{ item.createdAt.S }}</span>
-        <span>User name</span>
+        <span>{{ isCurrentUserMessage(item) ? "Me" : item.authorName }}</span>
 
         <span>{{ item.message.S }}</span>
       </li>

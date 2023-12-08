@@ -13,7 +13,6 @@ import {
 import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
 import { selectPeopleList } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
-import { PeopleService } from '../../services/people.service';
 
 @Component({
   selector: 'app-people-section',
@@ -30,7 +29,6 @@ export class PeopleSectionComponent {
   private countdownSubscription!: Subscription;
 
   constructor(
-    private peopleService: PeopleService,
     private store: Store,
     private countdownService: CountdownService
   ) {}
@@ -49,7 +47,7 @@ export class PeopleSectionComponent {
       }
     });
 
-    this.peopleListData$ = this.store.select(selectPeopleList);
+    // this.peopleListData$ = this.store.select(selectPeopleList);
     this.observeCountdown();
   }
   private startCountdown(): void {
@@ -66,11 +64,11 @@ export class PeopleSectionComponent {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdownPeople(countdownValue);
+      this.countdownService.setCountdown('people',countdownValue);
     });
   }
   private observeCountdown() {
-    this.countdownService.getCountdownPeople().subscribe((countdown) => {
+    this.countdownService.getCountdown('people').subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
     });

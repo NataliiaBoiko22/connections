@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { TuiItemDirective } from '@taiga-ui/cdk';
 import { TuiDialogService } from '@taiga-ui/core';
 import {
   catchError,
   EMPTY,
   exhaustMap,
-  filter,
   map,
   mergeMap,
   of,
-  switchMap,
   take,
   tap,
   withLatestFrom,
@@ -32,7 +29,7 @@ import {
   setProfileData,
   updateName,
 } from '../actions/actions';
-import { selectProfileData } from '../selectors/selectors';
+import { selectPeopleList } from '../selectors/selectors';
 import { transformUnixTimestampToReadableDate } from './date-utils';
 
 @Injectable()
@@ -165,38 +162,50 @@ export class ConnectionsEffects {
         const params = { groupID: action.groupID };
         return this.httpService.deleteGroup({ headers }, params).pipe(
           take(1),
-          exhaustMap(() => {
+          tap(() => {
             this.dialogService
               .open('Your group removed successfully!', {
                 label: 'Success',
                 size: 's',
               })
               .subscribe();
-            return of({ type: 'NO_ACTION' });
           }),
+          map(() => deleteGroupSuccess({ groupID: action.groupID })),
           catchError(() => of({ type: 'ERROR_ACTION' }))
         );
       })
     )
   );
 
-  loadGoupsMessagesData$ = createEffect(() =>
+  loadGroupsMessagesData$ = createEffect(() =>
     this.actions$.pipe(
       ofType(setGroupMessagesData),
-      exhaustMap((action) => {
+      withLatestFrom(this.store.pipe(select(selectPeopleList))),
+      exhaustMap(([action, peopleList]) => {
         const headers = this.createHeaders();
         const params = { groupID: action.groupID };
+        console.log('peopleList', peopleList.Items);
         return this.httpService.getGroupMessages({ headers }, params).pipe(
           take(1),
           map((data: GroupMessagesResponseBody) => {
             const transformedData = {
               Count: data.Count,
-              Items: data.Items.map((item) => ({
-                ...item,
-                createdAt: {
-                  S: transformUnixTimestampToReadableDate(item.createdAt.S),
-                },
-              })),
+              Items: data.Items.map((item) => {
+                const authorItem = peopleList.Items.find(
+                  (person) => person.uid.S === item.authorID.S
+                );
+                const authorName = authorItem
+                  ? authorItem.name.S
+                  : 'Unknown Author';
+
+                return {
+                  ...item,
+                  createdAt: {
+                    S: transformUnixTimestampToReadableDate(item.createdAt.S),
+                  },
+                  authorName: authorName,
+                };
+              }),
             };
             return setGroupMessagesDataSuccess({ data: transformedData });
           }),
@@ -230,6 +239,7 @@ export class ConnectionsEffects {
   constructor(
     private actions$: Actions,
     private httpService: HttpService,
-    private dialogService: TuiDialogService
+    private dialogService: TuiDialogService,
+    private store: Store
   ) {}
 }

@@ -98,7 +98,7 @@ export class GroupSectionComponent implements OnInit {
     return createdBy === this.userId;
   }
   private observeCountdown() {
-    this.countdownService.getCountdownGroups().subscribe((countdown) => {
+    this.countdownService.getCountdown('groups').subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
@@ -123,7 +123,7 @@ export class GroupSectionComponent implements OnInit {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdownGroups(countdownValue);
+      this.countdownService.setCountdown('groups', countdownValue);
     });
   }
 
@@ -150,7 +150,9 @@ export class GroupSectionComponent implements OnInit {
     this.groupListData$ = this.store.select(selectGroupList);
   }
 
-  onGroupDialogPage(groupID: string) {
-    this.router.navigate(['/group', groupID]);
+  onGroupDialogPage(groupID: string, createdBy: string) {
+    this.router.navigate(['/group', groupID], {
+      queryParams: { createdBy: createdBy },
+    });
   }
 }

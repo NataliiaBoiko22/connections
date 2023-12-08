@@ -58,5 +58,5 @@ export const setGroupMessagesDataSuccess = createAction(
 
 export const sendGroupMessagesData = createAction(
   '[Group Messages] Send Group Messages Data',
-  props<{ groupID: string; message: string }>()
+  props<{ groupID: string; authorID: string; message: string }>()
 );

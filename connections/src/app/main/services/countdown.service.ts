@@ -7,17 +7,39 @@ import { BehaviorSubject } from 'rxjs';
 export class CountdownService {
   private countdownGroup$ = new BehaviorSubject<number>(0);
   private countdownPeople$ = new BehaviorSubject<number>(0);
-  setCountdownGroups(value: number): void {
-    this.countdownGroup$.next(value);
-  }
-  setCountdownPeople(value: number): void {
-    this.countdownPeople$.next(value);
+  private countdownGroupsMessages$ = new BehaviorSubject<number>(0);
+
+  setCountdown(
+    type: 'groups' | 'people' | 'groupsMessages',
+    value: number
+  ): void {
+    switch (type) {
+      case 'groups':
+        this.countdownGroup$.next(value);
+        break;
+      case 'people':
+        this.countdownPeople$.next(value);
+        break;
+      case 'groupsMessages':
+        this.countdownGroupsMessages$.next(value);
+        break;
+      default:
+        throw new Error('Invalid countdown type');
+    }
   }
 
-  getCountdownGroups(): BehaviorSubject<number> {
-    return this.countdownGroup$;
-  }
-  getCountdownPeople(): BehaviorSubject<number> {
-    return this.countdownPeople$;
+  getCountdown(
+    type: 'groups' | 'people' | 'groupsMessages'
+  ): BehaviorSubject<number> {
+    switch (type) {
+      case 'groups':
+        return this.countdownGroup$;
+      case 'people':
+        return this.countdownPeople$;
+      case 'groupsMessages':
+        return this.countdownGroupsMessages$;
+      default:
+        throw new Error('Invalid countdown type');
+    }
   }
 }

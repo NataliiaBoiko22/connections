@@ -3,6 +3,7 @@ import { CreatedGroupItem } from 'src/app/shared/models/groups-model';
 import {
   createGroupSuccess,
   deleteGroup,
+  deleteGroupSuccess,
   deleteLogin,
   sendGroupMessagesData,
   setEmailError,
@@ -60,7 +61,7 @@ export const connectionsReducer = createReducer(
       createdGroupList: updatedGroupList,
     };
   }),
-  on(deleteGroup, (state, { groupID }) => {
+  on(deleteGroupSuccess, (state, { groupID }) => {
     const updatedGroups = state.groupList.Items.filter(
       (group) => group.id.S !== groupID
     );
@@ -82,7 +83,7 @@ export const connectionsReducer = createReducer(
       groupMessages: data,
     };
   }),
-  on(sendGroupMessagesData, (state, { groupID, message }) => {
+  on(sendGroupMessagesData, (state, { groupID, authorID, message }) => {
     return {
       ...state,
       groupMessages: {
@@ -90,9 +91,10 @@ export const connectionsReducer = createReducer(
         Items: [
           ...state.groupMessages.Items,
           {
-            authorID: { S: new Date().toISOString() },
+            authorID: { S: authorID },
             message: { S: message },
             createdAt: { S: new Date().toLocaleString() },
+            authorName: 'Me',
           },
         ],
       },

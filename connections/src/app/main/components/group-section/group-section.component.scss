@@ -1,4 +1,4 @@
-.group-wrapper {
+.group {
   display: flex;
   flex-direction: column;
   border: 5px solid blue;
@@ -6,6 +6,10 @@
   height: auto;
   flex-grow: 1;
   box-sizing: border-box;
+  &__item {
+    display: flex;
+    justify-content: space-between;
+  }
 }
 #countdown {
   display: none;
