@@ -1,3 +1,4 @@
+import { ResponseCoversationBody } from '../shared/models/conversation-model';
 import { GroupMessagesResponseBody } from '../shared/models/group-messages';
 import {
   CreatedGroupItem,
@@ -13,6 +14,7 @@ export interface ConnectionsState {
   peopleList: PeopleListResponseBody;
   createdGroupList: CreatedGroupItem[];
   groupMessages: GroupMessagesResponseBody;
+  coversation: ResponseCoversationBody;
 }
 
 export const initialState: ConnectionsState = {
@@ -44,4 +46,5 @@ export const initialState: ConnectionsState = {
     Count: 0,
     Items: [],
   },
+  coversation: { conversationID: ""},
 };

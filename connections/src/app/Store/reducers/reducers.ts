@@ -5,7 +5,10 @@ import {
   deleteGroup,
   deleteGroupSuccess,
   deleteLogin,
+  deleteLoginSuccess,
   sendGroupMessagesData,
+  sendGroupMessagesDataSuccess,
+  setConversationDataSuccess,
   setEmailError,
   setGroupListData,
   setGroupMessagesData,
@@ -14,6 +17,7 @@ import {
   setProfileData,
   updateName,
 } from '../actions/actions';
+import { transformUnixTimestampToReadableDate } from '../effects/date-utils';
 import { initialState } from '../state.models';
 
 export const connectionsReducer = createReducer(
@@ -31,14 +35,15 @@ export const connectionsReducer = createReducer(
       },
     };
   }),
-  on(deleteLogin, (state) => {
-    return {
-      ...state,
-      profile: {
-        ...initialState.profile,
-      },
-    };
-  }),
+  // on(deleteLoginSuccess, (state) => {
+  //   return {
+  //     ...state,
+  //     profile: {
+  //       ...initialState.profile,
+  //     },
+  //   };
+  // }),
+  on(deleteLoginSuccess, () => initialState),
 
   on(setEmailError, (state, { emailError }) => ({
     ...state,
@@ -83,7 +88,7 @@ export const connectionsReducer = createReducer(
       groupMessages: data,
     };
   }),
-  on(sendGroupMessagesData, (state, { groupID, authorID, message }) => {
+  on(sendGroupMessagesDataSuccess, (state, { groupID, authorID, message }) => {
     return {
       ...state,
       groupMessages: {
@@ -93,11 +98,19 @@ export const connectionsReducer = createReducer(
           {
             authorID: { S: authorID },
             message: { S: message },
-            createdAt: { S: new Date().toLocaleString() },
+            createdAt: {
+              S: new Date().getTime().toString(),
+            },
             authorName: 'Me',
           },
         ],
       },
+    };
+  }),
+  on(setConversationDataSuccess, (state, { conversationID }) => {
+    return {
+      ...state,
+      coversation: conversationID,
     };
   })
 );

@@ -1,28 +1,28 @@
-<div class="people-wrapper">
-  <button
-    size="m"
-    tuiButton
-    type="submit"
-    class="tui-form__button"
-    (click)="onUpdatePeopleButton()"
-    [disabled]="isCountdownActive"
-  >
-    Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
-    <div id="countdown"></div>
-  </button>
-  <span> THIS IS People LIST SECTION</span>
+<div class="people">
+  <p class="people__title">PEOPLE</p>
+
+  <div class="people__buttons">
+    <button
+      size="m"
+      tuiButton
+      type="submit"
+      class="tui-form__button people__button"
+      (click)="onUpdatePeopleButton()"
+      [disabled]="isCountdownActive"
+    >
+      Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
+      <div id="countdown"></div>
+    </button>
+  </div>
   <ng-container *ngIf="peopleListData$ | async as peopleListData">
     <div *ngIf="peopleListData.Items.length > 0" class="profile__info">
       <ul
         class="tui-list tui-list_large"
         *ngFor="let item of peopleListData.Items"
       >
-        <li class="tui-list__item">{{ item.name.S }}</li>
-
+        <li class="tui-list__item people__item">{{ item.name.S }}</li>
       </ul>
     </div>
-    <div *ngIf="peopleListData.Items.length === 0">
-      No items available.
-    </div>
+    <div *ngIf="peopleListData.Items.length === 0">No items available.</div>
   </ng-container>
 </div>

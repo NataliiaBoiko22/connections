@@ -59,11 +59,7 @@ export class GroupSectionComponent implements OnInit {
       this.createGroupForm.markAsTouched();
     });
   }
-  ngOnDestroy(): void {
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
-  }
+
   ngOnInit(): void {
     this.store.pipe(select(selectGroupList), take(1)).subscribe((data) => {
       const isGroupListEmpty = this.isGroupListEmpty(data);
@@ -98,7 +94,7 @@ export class GroupSectionComponent implements OnInit {
     return createdBy === this.userId;
   }
   private observeCountdown() {
-    this.countdownService.getCountdown('groups').subscribe((countdown) => {
+    this.countdownService.getCountdownGroup().subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
@@ -123,7 +119,7 @@ export class GroupSectionComponent implements OnInit {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdown('groups', countdownValue);
+      this.countdownService.setCountdownGroup(countdownValue);
     });
   }
 
@@ -150,9 +146,14 @@ export class GroupSectionComponent implements OnInit {
     this.groupListData$ = this.store.select(selectGroupList);
   }
 
-  onGroupDialogPage(groupID: string, createdBy: string) {
+  onGroupDialogPage(groupID: string, createdBy: string): void {
     this.router.navigate(['/group', groupID], {
       queryParams: { createdBy: createdBy },
+    });
+  }
+  onGroupDialogPageFromNewGroup(groupID: string): void {
+    this.router.navigate(['/group', groupID], {
+      queryParams: { createdBy: this.userId },
     });
   }
 }

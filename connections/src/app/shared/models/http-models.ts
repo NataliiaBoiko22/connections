@@ -7,3 +7,7 @@ export interface HttpError {
 export interface RequestHeaders {
   headers: { [key: string]: string };
 }
+
+export interface ResponseSinceTimestamp {
+  since: number | undefined;
+}

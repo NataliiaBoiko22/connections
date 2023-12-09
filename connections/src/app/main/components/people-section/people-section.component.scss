@@ -1,10 +1,25 @@
-.people-wrapper {
+.people {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-end;
-  border: 5px solid green;
-  width: 100%;
+  align-items: center;
+  border-left: 5px solid green;
+  width: 500px;
   height: auto;
   flex-grow: 1;
+  &__item {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__title {
+    font-size: 36px;
+    color: var(--tui-base-07);
+  }
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__button {
+    margin: 0 5px;
+  }
 }

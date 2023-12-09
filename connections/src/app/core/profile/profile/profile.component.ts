@@ -114,6 +114,7 @@ export class ProfileComponent {
   }
   onLogoutButton() {
     this.store.dispatch(deleteLogin());
+
     localStorage.clear();
     sessionStorage.clear();
     const cookies = document.cookie.split(';');

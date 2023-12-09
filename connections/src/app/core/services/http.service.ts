@@ -35,7 +35,14 @@ import {
   GroupMessagesResponseBody,
   RequestGroupMessagesBody,
 } from 'src/app/shared/models/group-messages';
-import { RequestHeaders } from 'src/app/shared/models/http-models';
+import {
+  RequestHeaders,
+  ResponseSinceTimestamp,
+} from 'src/app/shared/models/http-models';
+import {
+  RequestConversationBody,
+  ResponseCoversationBody,
+} from 'src/app/shared/models/conversation-model';
 @Injectable({
   providedIn: 'root',
 })
@@ -52,6 +59,7 @@ export class HttpService {
   deleteGroupPath = '/groups/delete';
   getGroupMessagesPath = '/groups/read';
   postGroupMessagesPath = '/groups/append';
+  postPeopleConversationPath = '/conversations/create';
   constructor(
     private httpClient: HttpClient,
     private httpError: HttpErrorService,
@@ -112,6 +120,8 @@ export class HttpService {
   }
 
   public deleteLogin({ headers }: RequestHeaders) {
+    console.log('deleteLogin from httpService');
+
     return this.httpClient
       .delete(this.url + this.deleteProfilePath, {
         headers,
@@ -176,13 +186,22 @@ export class HttpService {
 
   public getGroupMessages(
     { headers }: RequestHeaders,
-    groupID: ResponseGroupID
+    groupID: ResponseGroupID,
+    since?: ResponseSinceTimestamp
   ) {
-    const params = new HttpParams().set('groupID', groupID.groupID);
+    let params = new HttpParams().set('groupID', groupID.groupID);
+
+    if (since?.since !== undefined) {
+      params = params.set('since', String(since.since));
+    }
+
+    const apiUrl =
+      this.url + this.getGroupMessagesPath + '?' + params.toString();
+    console.log('getGroupMessages API URL:', apiUrl);
+
     return this.httpClient
-      .get<GroupMessagesResponseBody>(this.url + this.getGroupMessagesPath, {
+      .get<GroupMessagesResponseBody>(apiUrl, {
         headers,
-        params,
       })
       .pipe(
         catchError((err: HttpErrorResponse) =>
@@ -190,6 +209,7 @@ export class HttpService {
         )
       );
   }
+
   public sendGroupMessages(
     body: RequestGroupMessagesBody,
     headers: RequestHeaders
@@ -199,5 +219,26 @@ export class HttpService {
     return this.httpClient
       .post(this.url + this.postGroupMessagesPath, body, headers)
       .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
+  }
+
+  public createConversation(
+    { headers }: RequestHeaders,
+    body: RequestConversationBody
+  ): Observable<ResponseCoversationBody> {
+    console.log('createConversation from httpService');
+
+    return this.httpClient
+      .post<ResponseCoversationBody>(
+        this.url + this.postPeopleConversationPath,
+        body,
+        {
+          headers,
+        }
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<ResponseCoversationBody>(err)
+        )
+      );
   }
 }

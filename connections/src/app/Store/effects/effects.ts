@@ -6,22 +6,28 @@ import {
   catchError,
   EMPTY,
   exhaustMap,
+  finalize,
   map,
   mergeMap,
   of,
+  switchMap,
   take,
   tap,
   withLatestFrom,
 } from 'rxjs';
 import { HttpService } from 'src/app/core/services/http.service';
 import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages';
+import { ResponseGroupID } from 'src/app/shared/models/groups-model';
+import { ResponseSinceTimestamp } from 'src/app/shared/models/http-models';
 import { ProfileResponseBody } from 'src/app/shared/models/profile-models';
 import {
   createGroup,
   createGroupSuccess,
   deleteGroup,
   deleteGroupSuccess,
+  deleteLoginSuccess,
   sendGroupMessagesData,
+  sendGroupMessagesDataSuccess,
   setGroupListData,
   setGroupMessagesData,
   setGroupMessagesDataSuccess,
@@ -30,7 +36,10 @@ import {
   updateName,
 } from '../actions/actions';
 import { selectPeopleList } from '../selectors/selectors';
-import { transformUnixTimestampToReadableDate } from './date-utils';
+import {
+  getLastReceivedTimestamp,
+  transformUnixTimestampToReadableDate,
+} from './date-utils';
 
 @Injectable()
 export class ConnectionsEffects {
@@ -90,22 +99,33 @@ export class ConnectionsEffects {
 
   logout$ = createEffect(() =>
     this.actions$.pipe(
-      ofType('[Profile] Logout'),
+      ofType('[Profile] Delete Login'),
       exhaustMap(() => {
         const headers = this.createHeaders();
 
         return this.httpService.deleteLogin({ headers }).pipe(
           take(1),
-          exhaustMap(() => {
+          tap(() => {
             this.dialogService
               .open('You have logged out successfully!', {
                 label: 'Success',
                 size: 's',
               })
               .subscribe();
-            return of({ type: 'NO_ACTION' });
           }),
-          catchError(() => of({ type: 'ERROR_ACTION' }))
+          switchMap(() => of(deleteLoginSuccess())),
+          catchError(() => of({ type: 'ERROR_ACTION' })),
+          finalize(() => console.log('Logout effect completed'))
+          // exhaustMap(() => {
+          //   this.dialogService
+          //     .open('You have logged out successfully!', {
+          //       label: 'Success',
+          //       size: 's',
+          //     })
+          //     .subscribe();
+          //   return of({ type: 'NO_ACTION' });
+          // }),
+          // catchError(() => of({ type: 'ERROR_ACTION' }))
         );
       })
     )
@@ -183,33 +203,49 @@ export class ConnectionsEffects {
       withLatestFrom(this.store.pipe(select(selectPeopleList))),
       exhaustMap(([action, peopleList]) => {
         const headers = this.createHeaders();
-        const params = { groupID: action.groupID };
-        console.log('peopleList', peopleList.Items);
-        return this.httpService.getGroupMessages({ headers }, params).pipe(
-          take(1),
-          map((data: GroupMessagesResponseBody) => {
-            const transformedData = {
-              Count: data.Count,
-              Items: data.Items.map((item) => {
-                const authorItem = peopleList.Items.find(
-                  (person) => person.uid.S === item.authorID.S
-                );
-                const authorName = authorItem
-                  ? authorItem.name.S
-                  : 'Unknown Author';
+        const paramsID: ResponseGroupID = { groupID: action.groupID };
+        const paramsSince: ResponseSinceTimestamp = {
+          since: action.since,
+        };
 
-                return {
-                  ...item,
-                  createdAt: {
-                    S: transformUnixTimestampToReadableDate(item.createdAt.S),
-                  },
-                  authorName: authorName,
+        console.log(
+          'params from effect loadGroupsMessagesData',
+          paramsID,
+          paramsSince
+        );
+        return (
+          this.httpService
+            // .getGroupMessages({ headers }, paramsID, paramsSince)
+            .getGroupMessages({ headers }, paramsID, paramsSince)
+
+            .pipe(
+              take(1),
+              map((data: GroupMessagesResponseBody) => {
+                console.log('data from http in effect', data);
+                const transformedData: GroupMessagesResponseBody = {
+                  Count: data.Count,
+                  Items: data.Items.map((item) => {
+                    const authorItem = peopleList.Items.find(
+                      (person) => person.uid.S === item.authorID.S
+                    );
+                    const authorName = authorItem
+                      ? authorItem.name.S
+                      : 'Unknown Author';
+
+                    return {
+                      ...item,
+                      createdAt: {
+                        S: item.createdAt.S,
+                      },
+                      authorName: authorName,
+                      lastTimestamp: getLastReceivedTimestamp(data),
+                    };
+                  }),
                 };
+                return setGroupMessagesDataSuccess({ data: transformedData });
               }),
-            };
-            return setGroupMessagesDataSuccess({ data: transformedData });
-          }),
-          catchError(() => EMPTY)
+              catchError(() => EMPTY)
+            )
         );
       })
     )
@@ -227,11 +263,15 @@ export class ConnectionsEffects {
         console.log('effect sendGoupMessageData', body, { headers });
 
         return this.httpService.sendGroupMessages(body, { headers }).pipe(
-          exhaustMap((resp) => {
-            console.log(resp);
-            return of({ type: 'NO_ACTION' });
-          }),
-          catchError(() => of({ type: 'ERROR_ACTION' }))
+          tap(() => console.log('after this.httpService.sendGroupMessages')),
+          map(() =>
+            sendGroupMessagesDataSuccess({
+              groupID: action.groupID,
+              authorID: action.authorID,
+              message: action.message,
+            })
+          ),
+          catchError(() => EMPTY)
         );
       })
     )

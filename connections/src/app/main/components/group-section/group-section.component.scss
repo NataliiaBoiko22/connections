@@ -1,14 +1,27 @@
 .group {
   display: flex;
   flex-direction: column;
-  border: 5px solid blue;
-  width: 100%;
+  border-right: 5px solid blue;
+  align-items: center;
+
+  width: 500px;
   height: auto;
   flex-grow: 1;
   box-sizing: border-box;
   &__item {
     display: flex;
     justify-content: space-between;
+  }
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__title {
+    font-size: 36px;
+    color: var(--tui-base-07);
+  }
+  &__button {
+    margin: 0 5px;
   }
 }
 #countdown {

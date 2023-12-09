@@ -1,4 +1,8 @@
 import { createAction, props } from '@ngrx/store';
+import {
+  RequestConversationBody,
+  ResponseCoversationBody,
+} from 'src/app/shared/models/conversation-model';
 import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages';
 import {
   GroupListResponseBody,
@@ -17,6 +21,10 @@ export const updateName = createAction(
   props<{ name: string }>()
 );
 export const deleteLogin = createAction('[Profile] Delete Login');
+export const deleteLoginSuccess = createAction(
+  '[Profile] Delete Login Success'
+);
+
 export const setEmailError = createAction(
   '[Email Error] Set Email Error',
   props<{ emailError: boolean }>()
@@ -47,9 +55,13 @@ export const deleteGroupSuccess = createAction(
   props<{ groupID: string }>()
 );
 
+// export const setGroupMessagesData = createAction(
+//   '[Group Messages] Set Group Messages Data',
+//   props<{ groupID: string }>()
+// );
 export const setGroupMessagesData = createAction(
   '[Group Messages] Set Group Messages Data',
-  props<{ groupID: string }>()
+  props<{ groupID: string; since?: number }>()
 );
 export const setGroupMessagesDataSuccess = createAction(
   '[Group Messages] Set Group Messages Data Success',
@@ -59,4 +71,16 @@ export const setGroupMessagesDataSuccess = createAction(
 export const sendGroupMessagesData = createAction(
   '[Group Messages] Send Group Messages Data',
   props<{ groupID: string; authorID: string; message: string }>()
+);
+export const sendGroupMessagesDataSuccess = createAction(
+  '[Group Messages] Send Group Messages Data  Success',
+  props<{ groupID: string; authorID: string; message: string }>()
+);
+export const setConversationData = createAction(
+  '[People Conversation] Set People Conversation Data',
+  props<{ companion: RequestConversationBody }>()
+);
+export const setConversationDataSuccess = createAction(
+  '[People Conversation] Set People Conversation Data Success',
+  props<{ conversationID: ResponseCoversationBody }>()
 );

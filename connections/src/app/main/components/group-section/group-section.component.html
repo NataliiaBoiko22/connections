@@ -1,37 +1,42 @@
 <div class="group">
-  <button
-    size="m"
-    tuiButton
-    type="submit"
-    class="tui-form__button"
-    (click)="onUpdateGroupsButton()"
-    [disabled]="isCountdownActive"
-  >
-    Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
-    <div id="countdown"></div>
-  </button>
-  <button
-    size="m"
-    tuiButton
-    type="submit"
-    class="tui-form__button"
-    (click)="onOpenModalButton()"
-  >
-    Create
-  </button>
+  <p class="group__title">GROUPS</p>
 
-  <span> THIS IS GROUP LIST SECTION</span>
+  <div class="group__buttons">
+    <div>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button"
+        (click)="onUpdateGroupsButton()"
+        [disabled]="isCountdownActive"
+      >
+        Update{{
+          (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : ""
+        }}
+        <div id="countdown"></div>
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button group__button"
+        (click)="onOpenModalButton()"
+      >
+        Create
+      </button>
+    </div>
+  </div>
   <ng-container *ngIf="groupListData$ | async as groupListData">
     <div *ngIf="groupListData.Items.length > 0" class="profile__info">
       <ul
         class="tui-list tui-list_large"
         *ngFor="let item of groupListData.Items"
       >
-        <li
-          class="tui-list__item group__item"
-          (click)="onGroupDialogPage(item.id.S, item.createdBy.S)"
-        >
-          <span>{{ item.name.S }}</span>
+        <li class="tui-list__item group__item">
+          <span (click)="onGroupDialogPage(item.id.S, item.createdBy.S)">{{
+            item.name.S
+          }}</span>
           <button
             *ngIf="isCurrentUserGroupCreator(item.createdBy.S)"
             (click)="onDeleteGroup(item.id.S)"
@@ -46,8 +51,13 @@
         class="tui-list tui-list_large"
         *ngIf="createdGroupListData$ | async as createdGroupListData"
       >
-        <li *ngFor="let groupItem of createdGroupListData">
-          <span>{{ groupItem.name }}</span>
+        <li
+          *ngFor="let groupItem of createdGroupListData"
+          class="tui-list__item group__item"
+        >
+          <span (click)="onGroupDialogPageFromNewGroup(groupItem.groupID)">{{
+            groupItem.name
+          }}</span>
           <button (click)="onDeleteGroup(groupItem.groupID)">✖</button>
         </li>
       </ul>

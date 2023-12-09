@@ -7,39 +7,29 @@ import { BehaviorSubject } from 'rxjs';
 export class CountdownService {
   private countdownGroup$ = new BehaviorSubject<number>(0);
   private countdownPeople$ = new BehaviorSubject<number>(0);
-  private countdownGroupsMessages$ = new BehaviorSubject<number>(0);
+  private countdownGroupMessages$ = new BehaviorSubject<number>(0);
 
-  setCountdown(
-    type: 'groups' | 'people' | 'groupsMessages',
-    value: number
-  ): void {
-    switch (type) {
-      case 'groups':
-        this.countdownGroup$.next(value);
-        break;
-      case 'people':
-        this.countdownPeople$.next(value);
-        break;
-      case 'groupsMessages':
-        this.countdownGroupsMessages$.next(value);
-        break;
-      default:
-        throw new Error('Invalid countdown type');
-    }
+  setCountdownGroup(value: number): void {
+    this.countdownGroup$.next(value);
   }
 
-  getCountdown(
-    type: 'groups' | 'people' | 'groupsMessages'
-  ): BehaviorSubject<number> {
-    switch (type) {
-      case 'groups':
-        return this.countdownGroup$;
-      case 'people':
-        return this.countdownPeople$;
-      case 'groupsMessages':
-        return this.countdownGroupsMessages$;
-      default:
-        throw new Error('Invalid countdown type');
-    }
+  getCountdownGroup(): BehaviorSubject<number> {
+    return this.countdownGroup$;
+  }
+
+  setCountdownPeople(value: number): void {
+    this.countdownPeople$.next(value);
+  }
+
+  getCountdownPeople(): BehaviorSubject<number> {
+    return this.countdownPeople$;
+  }
+
+  setCountdownGroupMessages(value: number): void {
+    this.countdownGroupMessages$.next(value);
+  }
+
+  getCountdownGroupMessages(): BehaviorSubject<number> {
+    return this.countdownGroupMessages$;
   }
 }

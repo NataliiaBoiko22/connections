@@ -14,6 +14,7 @@ export interface GroupMessage {
     S: string;
   };
   authorName: string;
+  lastTimestamp?: number;
 }
 // export interface GroupMessagesRequestBody {
 //   Count: number;

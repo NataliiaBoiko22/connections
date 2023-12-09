@@ -33,11 +33,6 @@ export class PeopleSectionComponent {
     private countdownService: CountdownService
   ) {}
 
-  ngOnDestroy(): void {
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
-  }
   ngOnInit(): void {
     // this.store.dispatch({ type: '[People List] Set People List Data' });
     this.store.pipe(select(selectPeopleList), take(1)).subscribe((data) => {
@@ -64,11 +59,11 @@ export class PeopleSectionComponent {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdown('people',countdownValue);
+      this.countdownService.setCountdownPeople(countdownValue);
     });
   }
   private observeCountdown() {
-    this.countdownService.getCountdown('people').subscribe((countdown) => {
+    this.countdownService.getCountdownPeople().subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
     });

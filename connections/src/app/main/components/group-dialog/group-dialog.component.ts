@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -18,8 +23,10 @@ import { TuiFieldErrorPipeModule, TuiInputModule } from '@taiga-ui/kit';
 import {
   BehaviorSubject,
   interval,
+  map,
   Observable,
   Subscription,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -33,6 +40,7 @@ import {
   sendGroupMessagesData,
   setGroupMessagesData,
 } from 'src/app/Store/actions/actions';
+import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/date-utils';
 import {
   selectGroupMessages,
   selectProfileData,
@@ -62,8 +70,13 @@ export class GroupDialogComponent implements OnInit {
   public countdown$ = new BehaviorSubject<number>(0);
   public isCountdownActive = false;
   private countdownSubscription!: Subscription;
-
-  public groupMessagesData$!: Observable<GroupMessagesResponseBody>;
+  groupMessagesData$ = this.store.select(selectGroupMessages).pipe(
+    map((data) => ({
+      ...data,
+      Items: this.sortAndTransformMessages(data.Items),
+    }))
+  );
+  // public groupMessagesData$!: Observable<GroupMessagesResponseBody>;
   public groupID!: string;
   public createdBy!: string;
 
@@ -82,45 +95,84 @@ export class GroupDialogComponent implements OnInit {
   sendMessageForm = new FormGroup({
     message: new FormControl('', [Validators.required]),
   });
-  ngOnDestroy(): void {
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
-  }
-  ngOnInit() {
-    this.route.params.subscribe((params) => {
-      const groupID = params['groupID'];
-      this.groupID = groupID;
-      console.log(this.groupID);
 
-      this.store
-        .pipe(
-          select(selectGroupMessages),
-          tap((data) => console.log('Data from selectGroupMessages:', data))
-        )
-        .subscribe((data) => {
-          const isGroupMessagesEmpty = this.isGroupMessagesEmpty(data);
-          if (isGroupMessagesEmpty) {
-            this.store.dispatch(setGroupMessagesData({ groupID }));
-          }
-          // this.groupMessagesData$ = this.store.select(selectGroupMessages);
-        });
-      this.groupMessagesData$ = this.store.select(selectGroupMessages);
-    });
-    // this.groupMessagesData$ = this.store.select(selectGroupMessages);
+  ngOnInit() {
+    // this.route.params.subscribe((params) => {
+    //   const groupID = params['groupID'];
+    //   this.groupID = groupID;
+    //   console.log(this.groupID);
+
+    //   this.store.pipe(select(selectGroupMessages)).subscribe((data) => {
+    //     const isGroupMessagesEmpty = this.isGroupMessagesEmpty(data);
+    //     if (isGroupMessagesEmpty) {
+    //       return this.store.dispatch(
+    //         setGroupMessagesData({ groupID: this.groupID })
+    //       );
+    //     } else {
+    //       const since = this.getLastReceivedTimestamp(data);
+    //       return this.store.dispatch(
+    //         setGroupMessagesData({ groupID: this.groupID, since: since })
+    //       );
+    //     }
+    //     // this.groupMessagesData$ = this.store.select(selectGroupMessages);
+    //     // this.groupMessagesData$ = this.store.select(selectGroupMessages).pipe(
+    //     //   map((data) => ({
+    //     //     ...data,
+    //     //     Items: this.sortMessages(data.Items),
+    //     //   }))
+    //     // );
+    //   });
+    // });
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          const groupID = params['groupID'];
+          this.groupID = groupID;
+          console.log(this.groupID);
+
+          return this.store.pipe(select(selectGroupMessages), take(1));
+        })
+      )
+      .subscribe((data) => {
+        if (this.isGroupMessagesEmpty(data)) {
+          this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
+        }
+      });
     this.route.queryParams.subscribe((queryParams) => {
       this.createdBy = queryParams['createdBy'];
     });
     console.log('this.groupMessagesData$', this.groupMessagesData$);
     this.observeCountdown();
   }
+
+  // private getLastReceivedMessage(
+  //   groupMessages: GroupMessagesResponseBody
+  // ): number {
+  //   // Assuming that the messages are sorted by timestamp and the last message is the most recent
+  //   const lastMessage = this.getLastReceivedTimestamp(groupMessages);
+  //   console.log('lastMessage', lastMessage);
+  //   return lastMessage ? lastMessage : 0;
+  // }
+  // private getLastReceivedTimestamp(
+  //   groupMessages: GroupMessagesResponseBody
+  // ): number {
+  //   let maxTimestamp = 0;
+
+  //   for (const message of groupMessages.Items) {
+  //     const timestamp = Number(message.createdAt.S);
+  //     console.log('timestamp', message.createdAt.S);
+  //     if (timestamp > maxTimestamp) {
+  //       maxTimestamp = timestamp;
+  //     }
+  //   }
+
+  //   return maxTimestamp;
+  // }
   private observeCountdown() {
-    this.countdownService
-      .getCountdown('groupsMessages')
-      .subscribe((countdown) => {
-        this.countdown$.next(countdown);
-        this.isCountdownActive = countdown !== null && countdown > 0;
-      });
+    this.countdownService.getCountdownGroupMessages().subscribe((countdown) => {
+      this.countdown$.next(countdown);
+      this.isCountdownActive = countdown !== null && countdown > 0;
+    });
   }
   private startCountdown(): void {
     this.countdown$.next(60);
@@ -136,7 +188,7 @@ export class GroupDialogComponent implements OnInit {
         this.countdownSubscription.unsubscribe();
       }
 
-      this.countdownService.setCountdown('groupsMessages', countdownValue);
+      this.countdownService.setCountdownGroupMessages(countdownValue);
     });
   }
 
@@ -149,8 +201,27 @@ export class GroupDialogComponent implements OnInit {
     this.router.navigate(['']);
   }
   onUpdateGroupsDialogButton(): void {
-    this.store.dispatch({ type: '[Group List] Set Group List Data' });
-    this.groupMessagesData$ = this.store.select(selectGroupMessages);
+    console.log('onUpdateGroupsDialogButton');
+    // this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
+    // this.groupMessagesData$ = this.store.select(selectGroupMessages);
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          const groupID = params['groupID'];
+          this.groupID = groupID;
+          return this.store.pipe(select(selectGroupMessages), take(1));
+        })
+      )
+      .subscribe((data) => {
+        const since = data.Items[0].lastTimestamp;
+        console.log(' const sinc from ngOnInit ', since);
+        this.store.dispatch(
+          setGroupMessagesData({ groupID: this.groupID, since: since })
+        );
+      });
+    this.route.queryParams.subscribe((queryParams) => {
+      this.createdBy = queryParams['createdBy'];
+    });
     this.startCountdown();
   }
 
@@ -172,6 +243,7 @@ export class GroupDialogComponent implements OnInit {
         message,
       })
     );
+    this.sendMessageForm.reset();
   }
   public isCurrentUserMessage(item: GroupMessage): boolean {
     return item.authorID.S === this.currentUserId;
@@ -179,5 +251,27 @@ export class GroupDialogComponent implements OnInit {
 
   public isCurrentUserGroupCreator(): boolean {
     return this.createdBy === this.userId;
+  }
+  private sortAndTransformMessages(messages: GroupMessage[]): GroupMessage[] {
+    const sortedMessages = this.sortMessages(messages);
+
+    return sortedMessages.map((message) => ({
+      ...message,
+      createdAt: {
+        S: transformUnixTimestampToReadableDate(message.createdAt.S),
+      },
+    }));
+  }
+  sortMessages(messages: GroupMessage[]): GroupMessage[] {
+    const mutableMessages = [...messages];
+
+    return mutableMessages.sort((a, b) => {
+      // const timeA = new Date(a.createdAt.S).getTime();
+      // const timeB = new Date(b.createdAt.S).getTime();
+      const timeA = Number(a.createdAt.S);
+      const timeB = Number(b.createdAt.S);
+
+      return timeA - timeB;
+    });
   }
 }
