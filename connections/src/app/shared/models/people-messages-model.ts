@@ -11,8 +11,10 @@ export interface PeopleMessagesRequestBody {
 }
 
 export interface PeopleMessagesResponseBody {
+  conversationID: string;
   Count: number;
   Items: PeopleMessage[];
+  lastTimestampInPeople?: number;
 }
 
 export interface PeopleMessage {
@@ -26,5 +28,7 @@ export interface PeopleMessage {
     S: string;
   };
   authorName: string;
-  lastTimestamp?: number;
+}
+export interface PeopleMessagesStateBody {
+  [conversationID: string]: PeopleMessagesResponseBody;
 }

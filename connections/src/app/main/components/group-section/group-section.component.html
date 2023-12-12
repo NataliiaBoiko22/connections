@@ -44,7 +44,10 @@
             >
               ✖
             </button>
-            <span class="group__item-name" (click)="onGroupDialogPageFromNewGroup(groupItem.groupID)">
+            <span
+              class="group__item-name"
+              (click)="onGroupDialogPageFromNewGroup(groupItem.groupID)"
+            >
               {{ groupItem.name }}
             </span>
           </li>
@@ -54,7 +57,7 @@
       <div *ngIf="groupListData.Items.length > 0">
         <ul
           class="tui-list tui-list_large"
-          *ngFor="let item of groupListData.Items"
+          *ngFor="let item of getSortedGroupList(groupListData)"
         >
           <li class="tui-list__item group__item">
             <button

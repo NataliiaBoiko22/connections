@@ -159,17 +159,22 @@ export const connectionsReducer = createReducer(
   }),
 
   on(setPeopleMessagesDataSuccess, (state, { data }) => {
+    const updatedPeopleMessages = {
+      ...state.peopleMessages,
+      [data.conversationID]: data,
+    };
+
     return {
       ...state,
-      peopleMessages: data,
+      peopleMessages: updatedPeopleMessages,
     };
   }),
-  on(setPeopleConversationIDSuccess, (state, { conversationID }) => {
-    return {
-      ...state,
-      peopleConversationID: conversationID,
-    };
-  }),
+  // on(setPeopleConversationIDSuccess, (state, { conversationID }) => {
+  //   return {
+  //     ...state,
+  //     peopleConversationID: conversationID,
+  //   };
+  // }),
   on(setPeopleConversationsListData, (state, { data }) => {
     return {
       ...state,
@@ -179,25 +184,31 @@ export const connectionsReducer = createReducer(
   on(
     sendPeopleMessagesDataSuccess,
     (state, { conversationID, authorID, message }) => {
+      const peopleMessages = state.peopleMessages[conversationID];
+
+      const newMessage = {
+        authorID: { S: authorID },
+        message: { S: message },
+        createdAt: {
+          S: new Date().getTime().toString(),
+        },
+        authorName: 'Me',
+      };
+      const updatedPeopleMessages = {
+        ...peopleMessages,
+        Count: (peopleMessages?.Count || 0) + 1,
+        Items: [...(peopleMessages?.Items || []), newMessage],
+      };
       return {
         ...state,
         peopleMessages: {
-          Count: state.peopleMessages.Count + 1,
-          Items: [
-            ...state.peopleMessages.Items,
-            {
-              authorID: { S: authorID },
-              message: { S: message },
-              createdAt: {
-                S: new Date().getTime().toString(),
-              },
-              authorName: 'Me',
-            },
-          ],
+          ...state.peopleMessages,
+          [conversationID]: updatedPeopleMessages,
         },
       };
     }
   ),
+
   // on(deletePeopleConversationSuccess, (state, { conversationID }) => {
   //   const updatedConversationsList = state.peopleConversationsList.Items.filter(
   //     (coversation) => coversation.id.S !== conversationID

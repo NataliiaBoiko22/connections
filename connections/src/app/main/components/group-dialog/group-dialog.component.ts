@@ -70,15 +70,14 @@ import { CountdownService } from '../../services/countdown.service';
   ],
 })
 export class GroupDialogComponent implements OnInit {
-  userId = localStorage.getItem('uid') as string;
-
+  // public userId = localStorage.getItem('uid') as string;
+  public currentUserId = localStorage.getItem('uid') as string;
   public countdown$ = new BehaviorSubject<number>(0);
-  private countdownsMap = new Map<string, BehaviorSubject<number>>();
+  // private countdownsMap = new Map<string, BehaviorSubject<number>>();
   public isCountdownActive = false;
   public groupID!: string;
   public createdBy!: string;
   public name!: string;
-  public currentUserId = localStorage.getItem('uid') as string;
   public groupMessagesData$ = this.store
     .select(selectGroupMessagesById(this.groupID))
     .pipe(
@@ -126,6 +125,15 @@ export class GroupDialogComponent implements OnInit {
         if (!data) {
           this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
         }
+        if (data) {
+          this.store.dispatch(
+            setGroupMessagesData({
+              groupID: this.groupID,
+              since: data.lastTimestampInGroup,
+            })
+          );
+        }
+
         this.groupMessagesData$ = this.store
           .pipe(select(selectGroupMessagesById(this.groupID)))
           .pipe(
@@ -139,7 +147,9 @@ export class GroupDialogComponent implements OnInit {
       this.createdBy = queryParams['createdBy'];
     });
     console.log('this.groupMessagesData$', this.groupMessagesData$);
-    this.countdown$ = this.countdownService.getCountdownForGroup(this.groupID);
+    this.countdown$ = this.countdownService.getCountdownForGroupDialog(
+      this.groupID
+    );
     this.observeCountdown();
   }
 
@@ -148,16 +158,37 @@ export class GroupDialogComponent implements OnInit {
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
   }
+  // private initializeCountdowns(
+  //   groupID: string,
+  //   lastTimestampInGroup: number
+  // ): void {
+  //   const countdown$ =
+  //     this.countdownService.getCountdownForGroupDialog(groupID);
+  //   if (!countdown$.value) {
+  //     this.countdownService.setCountdownForGroupDialog(
+  //       groupID,
+  //       lastTimestampInGroup
+  //     );
+
+  //     // this.countdownsMap.set(groupID, countdown$);
+  //     // console.log('countdownsMap:', Object.fromEntries(this.countdownsMap));
+  //     console.log(
+  //       'this.startCountdown(groupID, lastTimestamp);',
+  //       groupID,
+  //       lastTimestampInGroup
+  //     );
+  //     this.startCountdown(groupID, lastTimestampInGroup);
+  //   }
+  // }
   private initializeCountdowns(
     groupID: string,
     lastTimestampInGroup: number
   ): void {
-    const countdown$ = this.countdownService.getCountdownForGroup(groupID);
+    const countdown$ =
+      this.countdownService.getCountdownForGroupDialog(groupID);
+
     if (!countdown$.value) {
-      this.countdownsMap.set(groupID, countdown$);
-      console.log('countdownsMap:', Object.fromEntries(this.countdownsMap));
-      console.log(
-        'this.startCountdown(groupID, lastTimestamp);',
+      this.countdownService.setCountdownForGroupDialog(
         groupID,
         lastTimestampInGroup
       );
@@ -165,23 +196,58 @@ export class GroupDialogComponent implements OnInit {
     }
   }
 
-  private startCountdown(
-    groupID: string,
-    lastTimestampInGroup: number | undefined
-  ): void {
-    console.log('startCountdown( groupID', groupID);
-    console.log('startCountdown( lastTimestamp', lastTimestampInGroup);
-    const countdown$ = this.countdownService.getCountdownForGroup(groupID);
-    console.log('startCountdown( countdown$', countdown$);
+  // private startCountdown(
+  //   groupID: string,
+  //   lastTimestampInGroup: number | undefined
+  // ): void {
+  //   // console.log('startCountdown( groupID', groupID);
+  //   // console.log('startCountdown( lastTimestamp', lastTimestampInGroup);
+  //   const countdown$ =
+  //     this.countdownService.getCountdownForGroupDialog(groupID);
+  //   console.log('startCountdown( countdown$', countdown$.getValue);
+  //   if (countdown$) {
+  //     const startTime = Math.floor(new Date().getTime() / 1000);
+  //     const countdownSubscription = interval(1000).subscribe(() => {
+  //       const currentTime = Math.floor(new Date().getTime() / 1000);
+  //       const elapsedTime = currentTime - startTime;
+
+  //       const countdownValue = Math.max(0, Math.min(60, 60 - elapsedTime));
+  //       this.countdown$.next(countdownValue);
+  //       this.countdownService.setCountdownForGroupDialog(
+  //         groupID,
+  //         countdownValue
+  //       );
+
+  //       if (countdownValue <= 0) {
+  //         countdownSubscription.unsubscribe();
+  //       }
+  //       this.cdRef.detectChanges();
+  //     });
+  //   }
+  // }
+  private startCountdown(groupID: string, lastTimestampInGroup: number): void {
+    const countdown$ =
+      this.countdownService.getCountdownForGroupDialog(groupID);
+
     if (countdown$) {
       const startTime = Math.floor(new Date().getTime() / 1000);
+      const initialElapsedTime = Math.max(
+        0,
+        Math.min(60, 60 - (startTime - lastTimestampInGroup))
+      );
+
+      countdown$.next(initialElapsedTime);
+
       const countdownSubscription = interval(1000).subscribe(() => {
         const currentTime = Math.floor(new Date().getTime() / 1000);
         const elapsedTime = currentTime - startTime;
 
         const countdownValue = Math.max(0, Math.min(60, 60 - elapsedTime));
-        this.countdown$.next(countdownValue);
-        this.countdownService.setCountdownForGroup(groupID, countdownValue);
+        countdown$.next(countdownValue);
+        this.countdownService.setCountdownForGroupDialog(
+          groupID,
+          countdownValue
+        );
 
         if (countdownValue <= 0) {
           countdownSubscription.unsubscribe();
@@ -225,15 +291,25 @@ export class GroupDialogComponent implements OnInit {
             .pipe(select(selectGroupMessagesById(this.groupID)), take(1))
             .subscribe((updatedData) => {
               console.log('.subscribe((updatedData)', updatedData);
-              this.countdown$ = this.countdownService.getCountdownForGroup(
-                this.groupID
-              );
+              this.countdown$ =
+                this.countdownService.getCountdownForGroupDialog(this.groupID);
 
               this.initializeCountdowns(
                 this.groupID,
                 updatedData.lastTimestampInGroup!
               );
             });
+          return;
+        }
+        if (
+          data.lastTimestampInGroup !== undefined &&
+          data.lastTimestampInGroup > 0
+        ) {
+          this.countdown$ = this.countdownService.getCountdownForGroupDialog(
+            this.groupID
+          );
+
+          this.initializeCountdowns(this.groupID, data.lastTimestampInGroup!);
           return;
         }
       });
@@ -251,7 +327,7 @@ export class GroupDialogComponent implements OnInit {
       return;
     }
     const message = this.sendMessageForm.get('message')?.value as string;
-    console.log('onSendMessage', { groupID: this.groupID, message });
+    console.log('onSendMessage', { conversationID: this.groupID, message });
     this.store.dispatch(
       sendGroupMessagesData({
         groupID: this.groupID,
@@ -266,7 +342,7 @@ export class GroupDialogComponent implements OnInit {
   }
 
   public isCurrentUserGroupCreator(): boolean {
-    return this.createdBy === this.userId;
+    return this.createdBy === this.currentUserId;
   }
   private sortAndTransformMessages(messages: GroupMessage[]): GroupMessage[] {
     const sortedMessages = this.sortMessages(messages);

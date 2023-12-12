@@ -3,7 +3,7 @@ export interface GroupListResponseBody {
   Items: GroupItem[];
 }
 
-interface GroupItem {
+export interface GroupItem {
   id: {
     S: string;
   };

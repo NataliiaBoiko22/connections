@@ -26,6 +26,7 @@ import {
 import { TuiInputModule } from '@taiga-ui/kit';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 import {
+  GroupItem,
   GroupListResponseBody,
   RequestGroupItem,
 } from 'src/app/shared/models/groups-model';
@@ -170,5 +171,14 @@ export class GroupSectionComponent implements OnInit {
     this.router.navigate(['/group', groupID], {
       queryParams: { createdBy: this.userId },
     });
+  }
+  getSortedGroupList(groupListData: GroupListResponseBody): GroupItem[] {
+    if (groupListData && groupListData.Items) {
+      return groupListData.Items.slice().sort((a, b) =>
+        a.name.S.localeCompare(b.name.S)
+      );
+    }
+
+    return [];
   }
 }

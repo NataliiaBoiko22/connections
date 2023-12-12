@@ -1,6 +1,7 @@
 import {
   PeopleConversationResonseBody,
   PeopleMessagesResponseBody,
+  PeopleMessagesStateBody,
 } from '../shared/models/people-messages-model';
 import {
   GroupMessagesResponseBody,
@@ -23,7 +24,7 @@ export interface ConnectionsState {
   peopleList: PeopleListResponseBody;
   createdGroupList: CreatedGroupItem[];
   groupMessages: GroupMessagesStateBody;
-  peopleMessages: PeopleMessagesResponseBody;
+  peopleMessages: PeopleMessagesStateBody;
   peopleConversationsList: PeopleConversationsListResponseBody;
   peopleConversationID: PeopleConversationResonseBody;
   // coversation: PeopleMessagesResponseBody;
@@ -60,10 +61,7 @@ export const initialState: ConnectionsState = {
   //   Count: 0,
   //   Items: [],
   // },
-  peopleMessages: {
-    Count: 0,
-    Items: [],
-  },
+  peopleMessages: {},
   peopleConversationID: { conversationID: '' },
   peopleConversationsList: {
     Count: 0,

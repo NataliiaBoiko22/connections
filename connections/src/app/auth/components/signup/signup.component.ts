@@ -97,12 +97,15 @@ export class SignupComponent {
   isRegistrationButtonDisabled = false;
   emailError$ = this.store.select(selectEmailError);
   patterns = {
-    PATTERN_NAME: /^[a-zA-Z\s]{1,40}$/,
+    PATTERN_NAME: /^[a-zA-Z\s\d\p{L}]{1,40}$/,
     PATTERN_PASSWORD:
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
   };
   authForm = new FormGroup({
-    name: new FormControl('', [Validators.required, Validators.pattern(this.patterns.PATTERN_NAME)],),
+    name: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.patterns.PATTERN_NAME),
+    ]),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,

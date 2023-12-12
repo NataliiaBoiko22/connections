@@ -42,6 +42,11 @@ export const selectGroupMessagesById = (groupID: string) =>
     selectConnectionsState,
     (state) => state.groupMessages[groupID]
   );
+  export const selectPeopleMessagesById = (conversationID: string) =>
+    createSelector(
+      selectConnectionsState,
+      (state) => state.peopleMessages[conversationID]
+    );
 // export const selectGroupMessagesById = (groupID: string) =>
 //   createSelector(selectConnectionsState, (state) => {
 //     const groupMessages = state.groupMessages;

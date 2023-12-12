@@ -1,5 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -33,7 +37,10 @@ import {
   setPeopleMessagesData,
 } from 'src/app/Store/actions/actions';
 import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/effect-utils';
-import { selectPeopleMessages } from 'src/app/Store/selectors/selectors';
+import {
+  selectPeopleMessages,
+  selectPeopleMessagesById,
+} from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
 
 @Component({
@@ -57,28 +64,36 @@ export class PeopleConversationComponent {
   public currentUserId = localStorage.getItem('uid') as string;
 
   public countdown$ = new BehaviorSubject<number>(0);
+  // private countdownsMapPeople = new Map<string, BehaviorSubject<number>>();
+
   public isCountdownActive = false;
-  private countdownSubscription!: Subscription;
+  // private countdownSubscription!: Subscription;
   public conversationID!: string;
   public createdBy!: string;
 
-  peopleMessagesData$ = this.store.select(selectPeopleMessages).pipe(
-    map((data) => ({
-      ...data,
-      Items: this.sortAndTransformMessages(data.Items),
-    }))
-  );
+  public peopleMessagesData$ = this.store
+    .select(selectPeopleMessagesById(this.conversationID))
+    .pipe(
+      map((data) => ({
+        ...data,
+        Items: this.sortAndTransformMessages(data.Items),
+      }))
+    );
 
   constructor(
     private store: Store,
     private router: Router,
     private route: ActivatedRoute,
-    private countdownService: CountdownService
+    private countdownService: CountdownService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.sendPeopleMessageForm.valueChanges.subscribe(() => {
       this.sendPeopleMessageForm.markAsTouched();
     });
   }
+  sendPeopleMessageForm = new FormGroup({
+    peopleMessage: new FormControl('', [Validators.required]),
+  });
 
   ngOnInit() {
     this.route.params
@@ -86,28 +101,108 @@ export class PeopleConversationComponent {
         switchMap((params) => {
           const conversationID = params['conversationID'];
           this.conversationID = conversationID;
-          console.log(conversationID);
+          console.log(this.conversationID);
 
-          return this.store.pipe(select(selectPeopleMessages), take(1));
+          return this.store.pipe(
+            select(selectPeopleMessagesById(this.conversationID)),
+            take(1)
+          );
         })
       )
       .subscribe((data) => {
-        if (this.isGroupMessagesEmpty(data)) {
+        console.log('data ngOnInit PeopleConversationComponent', data);
+        if (!data) {
           this.store.dispatch(
             setPeopleMessagesData({ conversationID: this.conversationID })
           );
+        } else {
+          this.store.dispatch(
+            setPeopleMessagesData({
+              conversationID: this.conversationID,
+              since: data.lastTimestampInPeople,
+            })
+          );
         }
+
+        this.peopleMessagesData$ = this.store
+          .pipe(select(selectPeopleMessagesById(this.conversationID)))
+          .pipe(
+            map((data) => ({
+              ...data,
+              Items: data ? this.sortAndTransformMessages(data.Items) : [],
+            }))
+          );
       });
-    // this.route.queryParams.subscribe((queryParams) => {
-    //   this.createdBy = queryParams['createdBy'];
-    // });
-    console.log('this.groupMessagesData$', this.peopleMessagesData$);
-    // this.observeCountdown();
+    this.route.queryParams.subscribe((queryParams) => {
+      this.createdBy = queryParams['createdBy'];
+    });
+    console.log('this.peopleMessagesData$', this.peopleMessagesData$);
+    this.countdown$ = this.countdownService.getCountdownForPeopleConversation(
+      this.conversationID
+    );
+    this.observeCountdown();
   }
 
-  sendPeopleMessageForm = new FormGroup({
-    peopleMessage: new FormControl('', [Validators.required]),
-  });
+  private observeCountdown() {
+    this.countdown$.subscribe((countdown) => {
+      this.isCountdownActive = countdown !== null && countdown > 0;
+    });
+  }
+  private initializeCountdowns(
+    conversationID: string,
+    lastTimestampInPeople: number
+  ): void {
+    const countdown$ =
+      this.countdownService.getCountdownForPeopleConversation(conversationID);
+    if (!countdown$.value) {
+      this.countdownService.setCountdownForPeopleConversation(
+        conversationID,
+        lastTimestampInPeople
+      );
+
+      console.log(
+        'this.startCountdown(groupID, lastTimestamp);',
+        conversationID,
+        lastTimestampInPeople
+      );
+      this.startCountdown(conversationID, lastTimestampInPeople);
+    }
+  }
+  private startCountdown(
+    conversationID: string,
+    lastTimestampInPeople: number
+  ): void {
+    // console.log('startCountdown( conversationID', conversationID);
+    // console.log('startCountdown( lastTimestampInPeople', lastTimestampInPeople);
+    const countdown$ =
+      this.countdownService.getCountdownForPeopleConversation(conversationID);
+    console.log('startCountdown( countdown$', countdown$);
+    if (countdown$) {
+      const startTime = Math.floor(new Date().getTime() / 1000);
+      const initialElapsedTime = Math.max(
+        0,
+        Math.min(60, 60 - (startTime - lastTimestampInPeople))
+      );
+
+      countdown$.next(initialElapsedTime);
+      const countdownSubscription = interval(1000).subscribe(() => {
+        const currentTime = Math.floor(new Date().getTime() / 1000);
+        const elapsedTime = currentTime - startTime;
+
+        const countdownValue = Math.max(0, Math.min(60, 60 - elapsedTime));
+        this.countdown$.next(countdownValue);
+        this.countdownService.setCountdownForPeopleConversation(
+          conversationID,
+          countdownValue
+        );
+
+        if (countdownValue <= 0) {
+          countdownSubscription.unsubscribe();
+        }
+        this.cdRef.detectChanges();
+      });
+    }
+  }
 
   public isCurrentUserMessage(item: PeopleMessage): boolean {
     return item.authorID.S === this.currentUserId;
@@ -153,48 +248,58 @@ export class PeopleConversationComponent {
     this.router.navigate(['']);
   }
   onUpdatePeopleConversationButton(): void {
-    console.log('onUpdateGroupsDialogButton');
-    // this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
-    // this.groupMessagesData$ = this.store.select(selectGroupMessages);
-    this.route.params
-      .pipe(
-        switchMap((params) => {
-          const conversationID = params['conversationID'];
-          this.conversationID = conversationID;
-          return this.store.pipe(select(selectPeopleMessages), take(1));
-        })
-      )
+    console.log('onUpdatePeopleConversationButton');
+    this.store
+      .pipe(select(selectPeopleMessagesById(this.conversationID)), take(1))
       .subscribe((data) => {
-        const since = data.Items[0].lastTimestamp;
-        console.log(' const sinc from ngOnInit ', since);
-        this.store.dispatch(
-          setPeopleMessagesData({
-            conversationID: this.conversationID,
-            since: since,
-          })
-        );
+        if (
+          data.lastTimestampInPeople !== undefined &&
+          data.lastTimestampInPeople > 0
+        ) {
+          console.log(
+            'Max timestamp from ngOnInit:',
+            data.lastTimestampInPeople
+          );
+
+          this.store.dispatch(
+            setPeopleMessagesData({
+              conversationID: this.conversationID,
+              since: data.lastTimestampInPeople,
+            })
+          );
+
+          this.store
+            .pipe(
+              select(selectPeopleMessagesById(this.conversationID)),
+              take(1)
+            )
+            .subscribe((updatedData) => {
+              console.log('.subscribe((updatedData)', updatedData);
+              this.countdown$ =
+                this.countdownService.getCountdownForPeopleConversation(
+                  this.conversationID
+                );
+
+              this.initializeCountdowns(
+                this.conversationID,
+                updatedData.lastTimestampInPeople!
+              );
+            });
+          return;
+        }
+        if (data.lastTimestampInPeople === 0) {
+          this.countdown$ =
+            this.countdownService.getCountdownForPeopleConversation(
+              this.conversationID
+            );
+
+          this.initializeCountdowns(
+            this.conversationID,
+            data.lastTimestampInPeople
+          );
+          return;
+        }
       });
-    // this.route.queryParams.subscribe((queryParams) => {
-    //   this.createdBy = queryParams['createdBy'];
-    // });
-    this.startCountdown();
-  }
-  private startCountdown(): void {
-    this.countdown$.next(60);
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
-    }
-
-    this.countdownSubscription = interval(1000).subscribe(() => {
-      const countdownValue = this.countdown$.value - 1;
-      this.countdown$.next(countdownValue);
-
-      if (countdownValue <= 0 && this.countdownSubscription) {
-        this.countdownSubscription.unsubscribe();
-      }
-
-      // this.countdownService.setCountdownGroupMessages(countdownValue);
-    });
   }
 
   onSendMessagePeople() {
@@ -204,7 +309,10 @@ export class PeopleConversationComponent {
     }
     const message = this.sendPeopleMessageForm.get('peopleMessage')
       ?.value as string;
-    console.log('onSendMessage', { groupID: this.conversationID, message });
+    console.log('onSendMessage', {
+      conversationID: this.conversationID,
+      message,
+    });
     this.store.dispatch(
       sendPeopleMessagesData({
         conversationID: this.conversationID,

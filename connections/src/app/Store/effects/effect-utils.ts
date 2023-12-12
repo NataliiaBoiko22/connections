@@ -1,9 +1,15 @@
+import { select, Store } from '@ngrx/store';
+import { map, Observable, take } from 'rxjs';
 import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages-model';
 import { PeopleMessagesResponseBody } from 'src/app/shared/models/people-messages-model';
 import {
   PeopleConversationItem,
   PeopleItem,
 } from 'src/app/shared/models/people-model';
+import {
+  selectGroupMessagesById,
+  selectPeopleMessagesById,
+} from '../selectors/selectors';
 
 export function transformUnixTimestampToReadableDate(
   timestamp: string,
@@ -36,32 +42,105 @@ export function transformUnixTimestampToReadableDate(
   return timestamp;
 }
 
-export function getLastReceivedTimestamp(
-  groupMessages: GroupMessagesResponseBody
+// export function getLastReceivedTimestamp(
+//   groupMessages: GroupMessagesResponseBody
+// ): number {
+//   let maxTimestamp = 0;
+
+//   for (const message of groupMessages.Items) {
+//     const timestamp = Number(message.createdAt.S);
+//     if (timestamp > maxTimestamp) {
+//       maxTimestamp = timestamp;
+//     }
+//   }
+
+//   return maxTimestamp;
+// }
+export function getLastReceivedTimestampGroup(
+  groupMessages: GroupMessagesResponseBody,
+  groupID: string,
+  store: Store
 ): number {
-  let maxTimestamp = 0;
+  let maxTimestampRequest = 0;
+  let maxTimestampStore = 0;
 
   for (const message of groupMessages.Items) {
     const timestamp = Number(message.createdAt.S);
-    if (timestamp > maxTimestamp) {
-      maxTimestamp = timestamp;
+    if (timestamp > maxTimestampRequest) {
+      maxTimestampRequest = timestamp;
     }
   }
 
+  store
+    .pipe(select(selectGroupMessagesById(groupID)))
+    .subscribe((peopleSms) => {
+      if (peopleSms && peopleSms.lastTimestampInGroup !== undefined) {
+        if (peopleSms.lastTimestampInGroup > maxTimestampStore) {
+          maxTimestampStore = peopleSms.lastTimestampInGroup;
+        }
+      }
+    });
+  console.log(
+    'maxTimestampStore getLastReceivedTimestampGroup',
+    maxTimestampStore
+  );
+  console.log(
+    'maxTimestampRequest getLastReceivedTimestampGroup',
+    maxTimestampRequest
+  );
+  let maxTimestamp = Math.max(maxTimestampRequest, maxTimestampStore);
+  console.log('maxTimestamp getLastReceivedTimestampGroup', maxTimestamp);
   return maxTimestamp;
 }
+// export function getLastReceivedTimestampPeople(
+//   peopleMessages: PeopleMessagesResponseBody
+// ): number {
+//   let maxTimestamp = 0;
+
+//   for (const message of peopleMessages.Items) {
+//     const timestamp = Number(message.createdAt.S);
+//     if (timestamp > maxTimestamp) {
+//       maxTimestamp = timestamp;
+//     }
+//   }
+
+//   return maxTimestamp;
+// }
 export function getLastReceivedTimestampPeople(
-  peopleMessages: PeopleMessagesResponseBody
+  peopleMessages: PeopleMessagesResponseBody,
+  conversationID: string,
+  store: Store
 ): number {
-  let maxTimestamp = 0;
+  let maxTimestampRequest = 0;
+  let maxTimestampStore = 0;
 
   for (const message of peopleMessages.Items) {
     const timestamp = Number(message.createdAt.S);
-    if (timestamp > maxTimestamp) {
-      maxTimestamp = timestamp;
+    if (timestamp > maxTimestampRequest) {
+      maxTimestampRequest = timestamp;
     }
   }
 
+  store
+    .pipe(select(selectPeopleMessagesById(conversationID)))
+    .subscribe((peopleSms) => {
+      if (peopleSms && peopleSms.lastTimestampInPeople !== undefined) {
+        if (peopleSms.lastTimestampInPeople > maxTimestampStore) {
+          maxTimestampStore = peopleSms.lastTimestampInPeople;
+        }
+      }
+    });
+
+  console.log(
+    'maxTimestampStore getLastReceivedTimestampPeople',
+    maxTimestampStore
+  );
+  console.log(
+    'maxTimestampRequest getLastReceivedTimestampPeople',
+    maxTimestampRequest
+  );
+  let maxTimestamp = Math.max(maxTimestampRequest, maxTimestampStore);
+  console.log('maxTimestamp getLastReceivedTimestampPeople', maxTimestamp);
   return maxTimestamp;
 }
 

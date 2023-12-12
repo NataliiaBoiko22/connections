@@ -24,18 +24,45 @@ export class CountdownService {
     return this.countdownPeople$;
   }
 
+  private countdownMapGroupDialogs = new Map<string, BehaviorSubject<number>>();
 
-  private countdownMap = new Map<string, BehaviorSubject<number>>();
-
-  getCountdownForGroup(groupID: string): BehaviorSubject<number> {
-    if (!this.countdownMap.has(groupID)) {
-      this.countdownMap.set(groupID, new BehaviorSubject<number>(0));
+  getCountdownForGroupDialog(groupID: string): BehaviorSubject<number> {
+    if (!this.countdownMapGroupDialogs.has(groupID)) {
+      this.countdownMapGroupDialogs.set(
+        groupID,
+        new BehaviorSubject<number>(0)
+      );
     }
-    return this.countdownMap.get(groupID)!;
+    return this.countdownMapGroupDialogs.get(groupID)!;
   }
 
-  setCountdownForGroup(groupID: string, value: number): void {
-    const countdown$ = this.getCountdownForGroup(groupID);
+  setCountdownForGroupDialog(groupID: string, value: number): void {
+    const countdown$ = this.getCountdownForGroupDialog(groupID);
+    countdown$.next(value);
+  }
+
+  private countdownMapPeopleConversation = new Map<
+    string,
+    BehaviorSubject<number>
+  >();
+
+  getCountdownForPeopleConversation(
+    conversationID: string
+  ): BehaviorSubject<number> {
+    if (!this.countdownMapPeopleConversation.has(conversationID)) {
+      this.countdownMapPeopleConversation.set(
+        conversationID,
+        new BehaviorSubject<number>(0)
+      );
+    }
+    return this.countdownMapPeopleConversation.get(conversationID)!;
+  }
+
+  setCountdownForPeopleConversation(
+    conversationID: string,
+    value: number
+  ): void {
+    const countdown$ = this.getCountdownForPeopleConversation(conversationID);
     countdown$.next(value);
   }
 }

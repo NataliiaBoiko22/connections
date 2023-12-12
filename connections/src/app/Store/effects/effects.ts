@@ -61,9 +61,8 @@ import {
 } from '../actions/actions';
 import { selectPeopleList } from '../selectors/selectors';
 import {
-  getLastReceivedTimestamp,
+  getLastReceivedTimestampGroup,
   getLastReceivedTimestampPeople,
-  mergePeopleAndConversationsData,
   transformUnixTimestampToReadableDate,
 } from './effect-utils';
 
@@ -305,9 +304,14 @@ export class ConnectionsEffects {
             take(1),
             map((data: GroupMessagesResponseBody) => {
               console.log('data from http in effect', data);
+              const lastTimestampInGroup = getLastReceivedTimestampGroup(
+                data,
+                action.groupID,
+                this.store
+              );
               const transformedData: GroupMessagesResponseBody = {
                 groupID: action.groupID,
-                lastTimestampInGroup: getLastReceivedTimestamp(data),
+                lastTimestampInGroup: lastTimestampInGroup,
 
                 Count: data.Count,
                 Items: data.Items.map((item) => {
@@ -413,8 +417,16 @@ export class ConnectionsEffects {
             take(1),
             map((data: PeopleMessagesResponseBody) => {
               console.log('data from http in effect', data);
+              const lastTimestampInPeople = getLastReceivedTimestampPeople(
+                data,
+                action.conversationID,
+                this.store
+              );
+
               const transformedData: PeopleMessagesResponseBody = {
+                conversationID: action.conversationID,
                 Count: data.Count,
+                lastTimestampInPeople: lastTimestampInPeople,
                 Items: data.Items.map((item) => {
                   const authorItem = peopleList.Items.find(
                     (person) => person.uid.S === item.authorID.S
@@ -429,12 +441,14 @@ export class ConnectionsEffects {
                       S: item.createdAt.S,
                     },
                     authorName: authorName,
-                    lastTimestamp: getLastReceivedTimestampPeople(data),
                   };
                 }),
               };
-              return setPeopleMessagesDataSuccess({ data: transformedData });
+              return setPeopleMessagesDataSuccess({
+                data: transformedData,
+              });
             }),
+
             catchError(() => EMPTY)
           );
       })
