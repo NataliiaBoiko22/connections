@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -9,7 +17,12 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { TuiButtonModule, TuiDialogModule } from '@taiga-ui/core';
+import { TuiAppBarModule } from '@taiga-ui/addon-mobile';
+import {
+  TuiButtonModule,
+  TuiDataListAccessor,
+  TuiDialogModule,
+} from '@taiga-ui/core';
 import { TuiInputModule } from '@taiga-ui/kit';
 import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 import {
@@ -36,6 +49,7 @@ import { CountdownService } from '../../services/countdown.service';
     TuiButtonModule,
     TuiDialogModule,
     TuiInputModule,
+    TuiAppBarModule,
   ],
 })
 export class GroupSectionComponent implements OnInit {
@@ -140,9 +154,9 @@ export class GroupSectionComponent implements OnInit {
     const data = this.createGroupForm.value as RequestGroupItem;
     this.store.dispatch(createGroup({ name: data.name }));
   }
-  onDeleteGroup(groupId: string): void {
-    console.log('groupId', groupId);
-    this.store.dispatch(deleteGroup({ groupID: groupId }));
+
+  onDeleteGroup(groupId: string, name: string): void {
+    this.store.dispatch(deleteGroup({ groupID: groupId, name: name }));
     this.groupListData$ = this.store.select(selectGroupList);
   }
 
@@ -152,6 +166,7 @@ export class GroupSectionComponent implements OnInit {
     });
   }
   onGroupDialogPageFromNewGroup(groupID: string): void {
+    console.log(' onGroupDialogPageFromNewGroup(groupID: string): void');
     this.router.navigate(['/group', groupID], {
       queryParams: { createdBy: this.userId },
     });

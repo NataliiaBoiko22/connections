@@ -1,17 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { TuiButtonModule, TuiDialogModule } from '@taiga-ui/core';
 import { TuiInputModule } from '@taiga-ui/kit';
 import {
   BehaviorSubject,
   interval,
+  map,
   Observable,
   Subscription,
   take,
 } from 'rxjs';
-import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
-import { selectPeopleList } from 'src/app/Store/selectors/selectors';
+import {
+  PeopleItem,
+  PeopleListResponseBody,
+} from 'src/app/shared/models/people-model';
+import { setPeopleConversationID } from 'src/app/Store/actions/actions';
+import {
+  selectPeopleConversationID,
+  selectPeopleConversationsList,
+  selectPeopleList,
+} from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
 
 @Component({
@@ -30,7 +40,8 @@ export class PeopleSectionComponent {
 
   constructor(
     private store: Store,
-    private countdownService: CountdownService
+    private countdownService: CountdownService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -39,9 +50,15 @@ export class PeopleSectionComponent {
       const isPeopleListEmpty = this.isPeopleListEmpty(data);
       if (isPeopleListEmpty) {
         this.store.dispatch({ type: '[People List] Set People List Data' });
+        // this.store.dispatch({
+        //   type: '[People List] Set People Conversations List Data',
+        // });
       }
     });
+    // this.store.pipe(select(selectPeopleConversationsList), take(1)).subscribe((data) =>
+    // {
 
+    // }
     // this.peopleListData$ = this.store.select(selectPeopleList);
     this.observeCountdown();
   }
@@ -62,7 +79,7 @@ export class PeopleSectionComponent {
       this.countdownService.setCountdownPeople(countdownValue);
     });
   }
-  private observeCountdown() {
+  private observeCountdown(): void {
     this.countdownService.getCountdownPeople().subscribe((countdown) => {
       this.countdown$.next(countdown);
       this.isCountdownActive = countdown !== null && countdown > 0;
@@ -79,5 +96,63 @@ export class PeopleSectionComponent {
     this.store.dispatch({ type: '[People List] Set People List Data' });
     this.peopleListData$ = this.store.select(selectPeopleList);
     this.startCountdown();
+  }
+
+  onPeopleConversationPage(uid: string, hasConversation: boolean): void {
+    if (!hasConversation) {
+      this.store.dispatch(
+        setPeopleConversationID({
+          companion: {
+            companion: uid,
+          },
+        })
+      );
+      this.store.pipe(select(selectPeopleConversationID)).subscribe((state) => {
+        const conversationID = state.conversationID;
+        console.log('select(selectPeopleConversationID)', conversationID);
+        if (conversationID) {
+          this.router.navigate(['/conversation', conversationID]);
+        }
+      });
+    } else {
+      this.store
+        .select(selectPeopleConversationsList)
+        .pipe(
+          map((conversations) =>
+            conversations.Items.find(
+              (conversation) => conversation.companionID.S === uid
+            )
+          )
+        )
+        .subscribe((existingConversation) => {
+          if (existingConversation) {
+            const conversationID = existingConversation.id.S;
+            console.log('Existing Conversation ID:', conversationID);
+            this.router.navigate(['/conversation', conversationID]);
+          }
+        });
+    }
+  }
+
+  getSortedPeopleList(peopleListData: PeopleListResponseBody): PeopleItem[] {
+    if (peopleListData && peopleListData.Items) {
+      const currentUserUid = localStorage.getItem('uid');
+
+      if (currentUserUid) {
+        const filteredItems = peopleListData.Items.filter(
+          (item) => item.uid.S !== currentUserUid
+        );
+
+        return filteredItems
+          .slice()
+          .sort((a, b) => a.name.S.localeCompare(b.name.S));
+      } else {
+        return peopleListData.Items.slice().sort((a, b) =>
+          a.name.S.localeCompare(b.name.S)
+        );
+      }
+    }
+
+    return [];
   }
 }

@@ -1,25 +1,61 @@
 .people {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  border-left: 5px solid green;
-  width: 500px;
+  padding: 30px;
+  padding-left: 85px;
   height: auto;
   flex-grow: 1;
+  box-sizing: border-box;
+  border-left: 5px solid var(--tui-base-05);
+  overflow-y: auto;
+  overflow-x: hidden;
+  &__top-part {
+    display: flex;
+    flex: 1;
+    width: 45%;
+    gap: 15px;
+    justify-content: space-between;
+    background: var(--tui-base-03);
+    align-items: center;
+    padding: 10px 20px 10px 25px;
+    position: fixed;
+    top: 48px;
+    right: 0px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 0 15px;
+  }
+  &__main-part {
+    margin-top: 5px;
+  }
   &__item {
     display: flex;
     justify-content: space-between;
-  }
-  &__title {
-    font-size: 36px;
-    color: var(--tui-base-07);
+    width: 200px;
+    box-shadow: 0 0 5px var(--tui-primary);
+    border-radius: 5px;
+    padding: 4px;
+    font-size: 16px;
+    color: var(--tui-base-08);
+    font-weight: 600;
   }
   &__buttons {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 30px;
+    align-items: flex-end;
+  }
+  &__title {
+    font-size: 42px;
+    color: var(--tui-primary);
+    text-decoration: underline var(--tui-base-05);
   }
   &__button {
     margin: 0 5px;
+    width: 120px;
   }
+}
+.has-conversation {
+  color: #e31f09;
 }

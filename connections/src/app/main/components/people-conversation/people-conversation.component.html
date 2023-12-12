@@ -1,4 +1,4 @@
-<div class="group-messages">
+<div class="people-messages">
   <button
     size="m"
     tuiButton
@@ -13,7 +13,7 @@
     tuiButton
     type="submit"
     class="tui-form__button"
-    (click)="onUpdateGroupsDialogButton()"
+    (click)="onUpdatePeopleConversationButton()"
     [disabled]="isCountdownActive"
   >
     Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
@@ -25,23 +25,22 @@
     tuiButton
     type="submit"
     class="tui-form__button"
-    (click)="onDeleteGroupsDialogButton()"
-    *ngIf="isCurrentUserGroupCreator()"
+    (click)="onDeletePeopleConversationButton()"
   >
     Delete
     <div id="countdown"></div>
   </button>
-  <ng-container *ngIf="groupMessagesData$ | async as groupMessagesData">
+  <ng-container *ngIf="peopleMessagesData$ | async as peopleMessagesData">
     <ul
       class="tui-list tui-list_large"
-      *ngFor="let item of groupMessagesData.Items"
+      *ngFor="let item of peopleMessagesData.Items"
       [ngClass]="
         isCurrentUserMessage(item)
-          ? 'group-messages__message-right'
-          : 'group-messages__message-left'
+          ? 'people-messages__message-right'
+          : 'people-messages__message-left'
       "
     >
-      <li class="tui-list__item group-messages__message">
+      <li class="tui-list__item people-messages__message">
         <span>{{ item.createdAt.S }}</span>
         <span>{{ isCurrentUserMessage(item) ? "Me" : item.authorName }}</span>
 
@@ -50,12 +49,16 @@
     </ul>
   </ng-container>
 
-  <form class="form" [formGroup]="sendMessageForm" class="group-messages__form">
+  <form
+    class="form"
+    [formGroup]="sendPeopleMessageForm"
+    class="people-messages__form"
+  >
     <tui-input
-      formControlName="message"
+      formControlName="peopleMessage"
       tuiHintContent="A tooltip"
       ngDefaultControl
-      class="group-messages__form-input"
+      class="people-messages__form-input"
     >
       Write a message
       <input placeholder="Write a message" tuiTextfield type="text" />
@@ -66,13 +69,13 @@
       tuiButton
       type="submit"
       class="tui-form__button"
-      (click)="onSendMessage()"
+      (click)="onSendMessagePeople()"
     >
       Send
     </button>
 
     <tui-error
-      formControlName="message"
+      formControlName="peopleMessage"
       [error]="[] | tuiFieldError | async"
     ></tui-error>
   </form>

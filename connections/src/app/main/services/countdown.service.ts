@@ -7,7 +7,6 @@ import { BehaviorSubject } from 'rxjs';
 export class CountdownService {
   private countdownGroup$ = new BehaviorSubject<number>(0);
   private countdownPeople$ = new BehaviorSubject<number>(0);
-  private countdownGroupMessages$ = new BehaviorSubject<number>(0);
 
   setCountdownGroup(value: number): void {
     this.countdownGroup$.next(value);
@@ -25,11 +24,18 @@ export class CountdownService {
     return this.countdownPeople$;
   }
 
-  setCountdownGroupMessages(value: number): void {
-    this.countdownGroupMessages$.next(value);
+
+  private countdownMap = new Map<string, BehaviorSubject<number>>();
+
+  getCountdownForGroup(groupID: string): BehaviorSubject<number> {
+    if (!this.countdownMap.has(groupID)) {
+      this.countdownMap.set(groupID, new BehaviorSubject<number>(0));
+    }
+    return this.countdownMap.get(groupID)!;
   }
 
-  getCountdownGroupMessages(): BehaviorSubject<number> {
-    return this.countdownGroupMessages$;
+  setCountdownForGroup(groupID: string, value: number): void {
+    const countdown$ = this.getCountdownForGroup(groupID);
+    countdown$.next(value);
   }
 }

@@ -1,3 +1,11 @@
+.profile-wrapper {
+  background-image: url(../../../../assets/background.jpg);
+  background-size: cover;
+  background-position: top;
+  height: 100vh;
+  margin: 0;
+}
+
 .profile {
   display: flex;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

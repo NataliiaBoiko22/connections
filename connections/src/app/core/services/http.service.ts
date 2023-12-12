@@ -22,7 +22,7 @@ import { HttpErrorService } from './http-error.service';
 import {
   EditProfileBody,
   ProfileResponseBody,
-} from 'src/app/shared/models/profile-models';
+} from 'src/app/shared/models/profile-model';
 import { Store } from '@ngrx/store';
 import { setEmailError } from 'src/app/Store/actions/actions';
 import {
@@ -30,19 +30,24 @@ import {
   RequestGroupItem,
   ResponseGroupID,
 } from 'src/app/shared/models/groups-model';
-import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
 import {
+  PeopleConversationsListResponseBody,
+  PeopleListResponseBody,
+} from 'src/app/shared/models/people-model';
+import {
+  GroupMessagesRequestBody,
   GroupMessagesResponseBody,
-  RequestGroupMessagesBody,
-} from 'src/app/shared/models/group-messages';
+} from 'src/app/shared/models/group-messages-model';
 import {
   RequestHeaders,
   ResponseSinceTimestamp,
-} from 'src/app/shared/models/http-models';
+} from 'src/app/shared/models/http-model';
 import {
-  RequestConversationBody,
-  ResponseCoversationBody,
-} from 'src/app/shared/models/conversation-model';
+  PeopleConversationRequestBody,
+  PeopleConversationResonseBody,
+  PeopleMessagesRequestBody,
+  PeopleMessagesResponseBody,
+} from 'src/app/shared/models/people-messages-model';
 @Injectable({
   providedIn: 'root',
 })
@@ -55,11 +60,16 @@ export class HttpService {
   deleteProfilePath = '/logout';
   getGroupsListPath = '/groups/list';
   postGroupsPath = '/groups/create';
-  peopleListPath = '/users';
+  getPeopleListPath = '/users';
   deleteGroupPath = '/groups/delete';
   getGroupMessagesPath = '/groups/read';
   postGroupMessagesPath = '/groups/append';
+  getPeopleConversationsListPath = '/conversations/list';
   postPeopleConversationPath = '/conversations/create';
+  getPeopleMessagesPath = '/conversations/read';
+
+  postPeopleMessagesPath = '/conversations/append';
+  deletePeopleConversationPath = '/conversations/delete';
   constructor(
     private httpClient: HttpClient,
     private httpError: HttpErrorService,
@@ -150,7 +160,7 @@ export class HttpService {
     console.log('getPeopleList from httpService');
 
     return this.httpClient
-      .get<PeopleListResponseBody>(this.url + this.peopleListPath, {
+      .get<PeopleListResponseBody>(this.url + this.getPeopleListPath, {
         headers,
       })
       .pipe(
@@ -211,7 +221,7 @@ export class HttpService {
   }
 
   public sendGroupMessages(
-    body: RequestGroupMessagesBody,
+    body: GroupMessagesRequestBody,
     headers: RequestHeaders
   ) {
     console.log('sendGroupMessages from httpService');
@@ -221,14 +231,54 @@ export class HttpService {
       .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 
-  public createConversation(
-    { headers }: RequestHeaders,
-    body: RequestConversationBody
-  ): Observable<ResponseCoversationBody> {
-    console.log('createConversation from httpService');
+  // public createConversation(
+  //   { headers }: RequestHeaders,
+  //   body: RequestConversationBody
+  // ): Observable<ResponseCoversationBody> {
+  //   console.log('createConversation from httpService');
+
+  //   return this.httpClient
+  //     .post<ResponseCoversationBody>(
+  //       this.url + this.postPeopleConversationPath,
+  //       body,
+  //       {
+  //         headers,
+  //       }
+  //     )
+  //     .pipe(
+  //       catchError((err: HttpErrorResponse) =>
+  //         this.handleHttpError<ResponseCoversationBody>(err)
+  //       )
+  //     );
+  // }
+
+  public getPeopleConversationsList({
+    headers,
+  }: RequestHeaders): Observable<PeopleConversationsListResponseBody> {
+    console.log('getPeopleConversationsList from httpService');
 
     return this.httpClient
-      .post<ResponseCoversationBody>(
+      .get<PeopleConversationsListResponseBody>(
+        this.url + this.getPeopleConversationsListPath,
+        {
+          headers,
+        }
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<PeopleConversationsListResponseBody>(err)
+        )
+      );
+  }
+
+  public createPeopleConversation(
+    body: PeopleConversationRequestBody,
+    { headers }: RequestHeaders
+  ): Observable<PeopleConversationResonseBody> {
+    console.log('createPeopleConversation from httpService');
+
+    return this.httpClient
+      .post<PeopleConversationResonseBody>(
         this.url + this.postPeopleConversationPath,
         body,
         {
@@ -237,8 +287,60 @@ export class HttpService {
       )
       .pipe(
         catchError((err: HttpErrorResponse) =>
-          this.handleHttpError<ResponseCoversationBody>(err)
+          this.handleHttpError<PeopleConversationResonseBody>(err)
         )
       );
+  }
+
+  public getPeopleMessages(
+    { headers }: RequestHeaders,
+    conversationID: PeopleMessagesRequestBody,
+    since?: ResponseSinceTimestamp
+  ) {
+    let params = new HttpParams().set(
+      'conversationID',
+      conversationID.conversationID
+    );
+
+    if (since?.since !== undefined) {
+      params = params.set('since', String(since.since));
+    }
+
+    const apiUrl =
+      this.url + this.getPeopleMessagesPath + '?' + params.toString();
+    console.log('getPeopleMessages API URL:', apiUrl);
+
+    return this.httpClient
+      .get<PeopleMessagesResponseBody>(apiUrl, {
+        headers,
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          this.handleHttpError<PeopleMessagesResponseBody>(err)
+        )
+      );
+  }
+  public sendPeopleMessages(
+    body: PeopleMessagesRequestBody,
+    headers: RequestHeaders
+  ) {
+    console.log('sendPeopleMessages from httpService');
+
+    return this.httpClient
+      .post(this.url + this.postPeopleMessagesPath, body, headers)
+      .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
+  }
+
+  public deletePeopleConversation(
+    { headers }: RequestHeaders,
+    conversationID: PeopleMessagesRequestBody
+  ) {
+    const params = new HttpParams().set(
+      'conversationID',
+      conversationID.conversationID
+    );
+    return this.httpClient
+      .delete(this.url + this.deletePeopleConversationPath, { headers, params })
+      .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 }

@@ -1,6 +1,10 @@
 .group-messages {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 550px;
+  margin: 0 auto;
   &__form {
     display: flex;
     width: 100%;
@@ -18,12 +22,22 @@
   }
   &__message-right > li {
     align-items: flex-end;
-
-    border: 1px solid red;
+    width: 300px;
+    overflow: hidden;
+    white-space: pre-line;
+    word-break: break-all;
+    box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(to right, #fcfdfd, #dff3e4);
+    padding: 10px;
   }
   &__message-left > li {
     align-items: flex-start;
-
-    border: 1px solid green;
+    width: 300px;
+    overflow: hidden;
+    white-space: pre-line;
+    word-break: break-all;
+    box-shadow: -4px 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(to right, #dfe3f3, #fcfdfd);
+    padding: 10px;
   }
 }

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   HostListener,
   OnInit,
@@ -33,16 +34,20 @@ import {
 import {
   GroupMessage,
   GroupMessagesResponseBody,
-} from 'src/app/shared/models/group-messages';
-import { ResponseGroupID } from 'src/app/shared/models/groups-model';
+  GroupMessagesStateBody,
+} from 'src/app/shared/models/group-messages-model';
+import {
+  GroupListResponseBody,
+  ResponseGroupID,
+} from 'src/app/shared/models/groups-model';
 import {
   deleteGroup,
   sendGroupMessagesData,
   setGroupMessagesData,
 } from 'src/app/Store/actions/actions';
-import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/date-utils';
+import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/effect-utils';
 import {
-  selectGroupMessages,
+  selectGroupMessagesById,
   selectProfileData,
 } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
@@ -68,24 +73,27 @@ export class GroupDialogComponent implements OnInit {
   userId = localStorage.getItem('uid') as string;
 
   public countdown$ = new BehaviorSubject<number>(0);
+  private countdownsMap = new Map<string, BehaviorSubject<number>>();
   public isCountdownActive = false;
-  private countdownSubscription!: Subscription;
-  groupMessagesData$ = this.store.select(selectGroupMessages).pipe(
-    map((data) => ({
-      ...data,
-      Items: this.sortAndTransformMessages(data.Items),
-    }))
-  );
-  // public groupMessagesData$!: Observable<GroupMessagesResponseBody>;
   public groupID!: string;
   public createdBy!: string;
-
+  public name!: string;
   public currentUserId = localStorage.getItem('uid') as string;
+  public groupMessagesData$ = this.store
+    .select(selectGroupMessagesById(this.groupID))
+    .pipe(
+      map((data) => ({
+        ...data,
+        Items: this.sortAndTransformMessages(data.Items),
+      }))
+    );
+
   constructor(
     private store: Store,
     private router: Router,
     private route: ActivatedRoute,
-    private countdownService: CountdownService
+    private countdownService: CountdownService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.sendMessageForm.valueChanges.subscribe(() => {
       this.sendMessageForm.markAsTouched();
@@ -97,99 +105,90 @@ export class GroupDialogComponent implements OnInit {
   });
 
   ngOnInit() {
-    // this.route.params.subscribe((params) => {
-    //   const groupID = params['groupID'];
-    //   this.groupID = groupID;
-    //   console.log(this.groupID);
-
-    //   this.store.pipe(select(selectGroupMessages)).subscribe((data) => {
-    //     const isGroupMessagesEmpty = this.isGroupMessagesEmpty(data);
-    //     if (isGroupMessagesEmpty) {
-    //       return this.store.dispatch(
-    //         setGroupMessagesData({ groupID: this.groupID })
-    //       );
-    //     } else {
-    //       const since = this.getLastReceivedTimestamp(data);
-    //       return this.store.dispatch(
-    //         setGroupMessagesData({ groupID: this.groupID, since: since })
-    //       );
-    //     }
-    //     // this.groupMessagesData$ = this.store.select(selectGroupMessages);
-    //     // this.groupMessagesData$ = this.store.select(selectGroupMessages).pipe(
-    //     //   map((data) => ({
-    //     //     ...data,
-    //     //     Items: this.sortMessages(data.Items),
-    //     //   }))
-    //     // );
-    //   });
-    // });
     this.route.params
       .pipe(
         switchMap((params) => {
           const groupID = params['groupID'];
+          const name = params['name'];
+
           this.groupID = groupID;
+          this.name = name;
           console.log(this.groupID);
 
-          return this.store.pipe(select(selectGroupMessages), take(1));
+          return this.store.pipe(
+            select(selectGroupMessagesById(this.groupID)),
+            take(1)
+          );
         })
       )
       .subscribe((data) => {
-        if (this.isGroupMessagesEmpty(data)) {
+        console.log('Group Messages:', data);
+        if (!data) {
           this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
         }
+        this.groupMessagesData$ = this.store
+          .pipe(select(selectGroupMessagesById(this.groupID)))
+          .pipe(
+            map((data) => ({
+              ...data,
+              Items: data ? this.sortAndTransformMessages(data.Items) : [],
+            }))
+          );
       });
     this.route.queryParams.subscribe((queryParams) => {
       this.createdBy = queryParams['createdBy'];
     });
     console.log('this.groupMessagesData$', this.groupMessagesData$);
+    this.countdown$ = this.countdownService.getCountdownForGroup(this.groupID);
     this.observeCountdown();
   }
 
-  // private getLastReceivedMessage(
-  //   groupMessages: GroupMessagesResponseBody
-  // ): number {
-  //   // Assuming that the messages are sorted by timestamp and the last message is the most recent
-  //   const lastMessage = this.getLastReceivedTimestamp(groupMessages);
-  //   console.log('lastMessage', lastMessage);
-  //   return lastMessage ? lastMessage : 0;
-  // }
-  // private getLastReceivedTimestamp(
-  //   groupMessages: GroupMessagesResponseBody
-  // ): number {
-  //   let maxTimestamp = 0;
-
-  //   for (const message of groupMessages.Items) {
-  //     const timestamp = Number(message.createdAt.S);
-  //     console.log('timestamp', message.createdAt.S);
-  //     if (timestamp > maxTimestamp) {
-  //       maxTimestamp = timestamp;
-  //     }
-  //   }
-
-  //   return maxTimestamp;
-  // }
   private observeCountdown() {
-    this.countdownService.getCountdownGroupMessages().subscribe((countdown) => {
-      this.countdown$.next(countdown);
+    this.countdown$.subscribe((countdown) => {
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
   }
-  private startCountdown(): void {
-    this.countdown$.next(60);
-    if (this.countdownSubscription) {
-      this.countdownSubscription.unsubscribe();
+  private initializeCountdowns(
+    groupID: string,
+    lastTimestampInGroup: number
+  ): void {
+    const countdown$ = this.countdownService.getCountdownForGroup(groupID);
+    if (!countdown$.value) {
+      this.countdownsMap.set(groupID, countdown$);
+      console.log('countdownsMap:', Object.fromEntries(this.countdownsMap));
+      console.log(
+        'this.startCountdown(groupID, lastTimestamp);',
+        groupID,
+        lastTimestampInGroup
+      );
+      this.startCountdown(groupID, lastTimestampInGroup);
     }
+  }
 
-    this.countdownSubscription = interval(1000).subscribe(() => {
-      const countdownValue = this.countdown$.value - 1;
-      this.countdown$.next(countdownValue);
+  private startCountdown(
+    groupID: string,
+    lastTimestampInGroup: number | undefined
+  ): void {
+    console.log('startCountdown( groupID', groupID);
+    console.log('startCountdown( lastTimestamp', lastTimestampInGroup);
+    const countdown$ = this.countdownService.getCountdownForGroup(groupID);
+    console.log('startCountdown( countdown$', countdown$);
+    if (countdown$) {
+      const startTime = Math.floor(new Date().getTime() / 1000);
+      const countdownSubscription = interval(1000).subscribe(() => {
+        const currentTime = Math.floor(new Date().getTime() / 1000);
+        const elapsedTime = currentTime - startTime;
 
-      if (countdownValue <= 0 && this.countdownSubscription) {
-        this.countdownSubscription.unsubscribe();
-      }
+        const countdownValue = Math.max(0, Math.min(60, 60 - elapsedTime));
+        this.countdown$.next(countdownValue);
+        this.countdownService.setCountdownForGroup(groupID, countdownValue);
 
-      this.countdownService.setCountdownGroupMessages(countdownValue);
-    });
+        if (countdownValue <= 0) {
+          countdownSubscription.unsubscribe();
+        }
+        this.cdRef.detectChanges();
+      });
+    }
   }
 
   public isGroupMessagesEmpty(data: GroupMessagesResponseBody): boolean {
@@ -202,31 +201,48 @@ export class GroupDialogComponent implements OnInit {
   }
   onUpdateGroupsDialogButton(): void {
     console.log('onUpdateGroupsDialogButton');
-    // this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
-    // this.groupMessagesData$ = this.store.select(selectGroupMessages);
-    this.route.params
-      .pipe(
-        switchMap((params) => {
-          const groupID = params['groupID'];
-          this.groupID = groupID;
-          return this.store.pipe(select(selectGroupMessages), take(1));
-        })
-      )
+
+    this.store
+      .pipe(select(selectGroupMessagesById(this.groupID)), take(1))
       .subscribe((data) => {
-        const since = data.Items[0].lastTimestamp;
-        console.log(' const sinc from ngOnInit ', since);
-        this.store.dispatch(
-          setGroupMessagesData({ groupID: this.groupID, since: since })
-        );
+        if (
+          data.lastTimestampInGroup !== undefined &&
+          data.lastTimestampInGroup > 0
+        ) {
+          console.log(
+            'Max timestamp from ngOnInit:',
+            data.lastTimestampInGroup
+          );
+
+          this.store.dispatch(
+            setGroupMessagesData({
+              groupID: this.groupID,
+              since: data.lastTimestampInGroup,
+            })
+          );
+
+          this.store
+            .pipe(select(selectGroupMessagesById(this.groupID)), take(1))
+            .subscribe((updatedData) => {
+              console.log('.subscribe((updatedData)', updatedData);
+              this.countdown$ = this.countdownService.getCountdownForGroup(
+                this.groupID
+              );
+
+              this.initializeCountdowns(
+                this.groupID,
+                updatedData.lastTimestampInGroup!
+              );
+            });
+          return;
+        }
       });
-    this.route.queryParams.subscribe((queryParams) => {
-      this.createdBy = queryParams['createdBy'];
-    });
-    this.startCountdown();
   }
 
   onDeleteGroupsDialogButton(): void {
-    this.store.dispatch(deleteGroup({ groupID: this.groupID }));
+    this.store.dispatch(
+      deleteGroup({ groupID: this.groupID, name: this.name })
+    );
     this.router.navigate(['']);
   }
   onSendMessage() {
@@ -266,10 +282,8 @@ export class GroupDialogComponent implements OnInit {
     const mutableMessages = [...messages];
 
     return mutableMessages.sort((a, b) => {
-      // const timeA = new Date(a.createdAt.S).getTime();
-      // const timeB = new Date(b.createdAt.S).getTime();
-      const timeA = Number(a.createdAt.S);
-      const timeB = Number(b.createdAt.S);
+      const timeA: number = Number(a.createdAt.S);
+      const timeB: number = Number(b.createdAt.S);
 
       return timeA - timeB;
     });

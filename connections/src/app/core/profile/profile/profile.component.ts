@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   EditProfileBody,
   ProfileResponseBody,
-} from 'src/app/shared/models/profile-models';
+} from 'src/app/shared/models/profile-model';
 import {
   TuiAlertModule,
   TuiButtonModule,
@@ -92,7 +92,7 @@ export class ProfileComponent {
   }
 
   patterns = {
-    PATTERN_NAME: /^[a-z0-9]+$/,
+    PATTERN_NAME: /^[a-zA-Z\s]{1,40}$/,
   };
   editProfileForm = new FormGroup({
     name: new FormControl('', [

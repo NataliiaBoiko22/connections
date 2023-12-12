@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TuiDialogService } from '@taiga-ui/core';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { HttpError } from 'src/app/shared/models/http-models';
+import { HttpError } from 'src/app/shared/models/http-model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,9 @@ export class HttpErrorService {
         size: 's',
       })
       .subscribe();
-    return EMPTY;
+    return throwError(
+      () => new Error('Something bad happened; please try again.')
+    );
     // return throwError(error);
   }
   // handleHttpError<T>(err: HttpErrorResponse): Observable<T> {

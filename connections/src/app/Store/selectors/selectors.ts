@@ -21,11 +21,41 @@ export const selectPeopleList = createSelector(
   selectConnectionsState,
   (state) => state.peopleList
 );
+export const selectPeopleConversationsList = createSelector(
+  selectConnectionsState,
+  (state) => state.peopleConversationsList
+);
+export const selectPeopleConversationID = createSelector(
+  selectConnectionsState,
+  (state) => state.peopleConversationID
+);
 export const selectCreatedGroupList = createSelector(
   selectConnectionsState,
   (state) => state.createdGroupList
 );
-export const selectGroupMessages = createSelector(
+// export const selectGroupMessages = createSelector(
+//   selectConnectionsState,
+//   (state) => state.groupMessages
+// );
+export const selectGroupMessagesById = (groupID: string) =>
+  createSelector(
+    selectConnectionsState,
+    (state) => state.groupMessages[groupID]
+  );
+// export const selectGroupMessagesById = (groupID: string) =>
+//   createSelector(selectConnectionsState, (state) => {
+//     const groupMessages = state.groupMessages;
+//     const groupMessage = Object.values(groupMessages).find(
+//       (message) => message === groupID
+//     );
+//     return groupMessage || { groupID: '', Count: 0, Items: [] };
+//   });
+// export const selectGroupMessagesById = (groupID: string) =>
+//   createSelector(selectConnectionsState, (state) => {
+//     return state.groupMessages.groupID === groupID;
+//   });
+
+export const selectPeopleMessages = createSelector(
   selectConnectionsState,
-  (state) => state.groupMessages
+  (state) => state.peopleMessages
 );

@@ -1,25 +1,25 @@
-<p class="wrapper">
-    <tui-notification
-        size="l"
-        status="success"
-        (close)="(0)"
-    >
-        <div class="tui-text_body-l-2">
-            <strong>Title</strong>
-        </div>
-        Notification multiline long text with icons
-        <div
-            tuiMode="onLight"
-            class="buttons tui-space_top-3"
-        >
-            <button
-                appearance="outline"
-                size="s"
-                tuiButton
-                class="tui-space_right-5"
-            >
-                Button
-            </button>
-        </div>
-    </tui-notification>
-</p>
+<!-- <div
+  *ngIf="data$ | async as data"
+  class="toast_wrapper"
+  [class.open]="isOpen"
+  [class.closed]="!isOpen"
+>
+  <div class="inner_wrapper">
+    WRAPPER
+
+    <div>
+      <h5 class="toast_title">{{ data.title }}</h5>
+      <div class="toast_text">{{ data.content }}</div>
+    </div>
+  </div>
+</div> -->
+<div
+  *ngIf="data$ | async as data"
+  class="toast_wrapper"
+  [@openClose]="isOpen ? 'open' : 'closed'"
+>
+  <div class="inner_wrapper">
+    <p class="toast_title">{{ data.title }}</p>
+    <p class="toast_text">{{ data.content }}</p>
+  </div>
+</div>

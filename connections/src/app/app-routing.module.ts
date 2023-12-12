@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './auth/guards/auth.guard';
 export const routes: Routes = [
   {
     path: 'signup',
@@ -28,12 +29,27 @@ export const routes: Routes = [
       import('./main/pages/main-page/main-page.component').then(
         (m) => m.MainPageComponent
       ),
+    canActivate: [AuthGuard],
   },
   {
     path: 'group/:groupID',
     loadComponent: () =>
       import('./main/components/group-dialog/group-dialog.component').then(
         (m) => m.GroupDialogComponent
+      ),
+  },
+  {
+    path: 'conversation/:conversationID',
+    loadComponent: () =>
+      import(
+        './main/components/people-conversation/people-conversation.component'
+      ).then((m) => m.PeopleConversationComponent),
+  },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./core/components/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
       ),
   },
 ];

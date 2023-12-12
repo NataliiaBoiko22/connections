@@ -1,0 +1,27 @@
+.loader {
+  display: flex;
+  width: 100%;
+  margin: 1rem 0;
+  position: relative;
+  z-index: 100;
+}
+:host {
+  display: block;
+  height: 100vh;
+}
+.main-content {
+  padding-top: 36px;
+  overflow-y: auto;
+}
+app-notification {
+  display: block;
+  top: 100px;
+  z-index: 1000;
+}
+
+app-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 500;
+}

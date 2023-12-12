@@ -102,7 +102,7 @@ export class SignupComponent {
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
   };
   authForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
+    name: new FormControl('', [Validators.required, Validators.pattern(this.patterns.PATTERN_NAME)],),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,
@@ -132,7 +132,6 @@ export class SignupComponent {
     this.authService.signUp(data);
   }
   onEmailInputChange(): void {
-    // Сбросить ошибки валидации при изменении значения поля email
     this.controlEmail.setErrors(null);
     this.store.dispatch(setEmailError({ emailError: false }));
   }

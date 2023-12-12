@@ -5,6 +5,10 @@ import { TuiDialogService } from '@taiga-ui/core';
 import { BehaviorSubject } from 'rxjs';
 import { HttpService } from 'src/app/core/services/http.service';
 import { SignInBody, SignUpBody } from 'src/app/shared/models/auth-models';
+import {
+  NotificationService,
+  toastTypes,
+} from 'src/app/shared/services/notification.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,20 +21,23 @@ export class AuthService {
   constructor(
     private httpService: HttpService,
     private router: Router,
-    private dialogService: TuiDialogService,
+    private notificationService: NotificationService,
     private store: Store
   ) {}
+
+  logged(): boolean {
+    return !!localStorage.getItem('token');
+  }
 
   signUp(data: SignUpBody): void {
     this.httpService.signUp(data).subscribe((resp) => {
       if (resp === null) {
         this.router.navigate(['signin']);
-        this.dialogService
-          .open('Account Created Successfully!', {
-            label: 'Success',
-            size: 's',
-          })
-          .subscribe();
+        this.notificationService.initiate({
+          title: 'Success!',
+          content: `Your account ${data.email} created successfully!`,
+          type: toastTypes.success,
+        });
       }
     });
   }
@@ -43,13 +50,11 @@ export class AuthService {
         localStorage.setItem('uid', respSingIn.uid);
         localStorage.setItem('email', data.email);
         this.router.navigate(['']);
-
-        this.dialogService
-          .open('Welcome to Connections', {
-            label: 'Success',
-            size: 's',
-          })
-          .subscribe();
+        this.notificationService.initiate({
+          title: `Welcome!`,
+          content: `You enter to Connections successfully!`,
+          type: toastTypes.success,
+        });
       }
     });
   }

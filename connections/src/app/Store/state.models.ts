@@ -1,11 +1,20 @@
-import { ResponseCoversationBody } from '../shared/models/conversation-model';
-import { GroupMessagesResponseBody } from '../shared/models/group-messages';
+import {
+  PeopleConversationResonseBody,
+  PeopleMessagesResponseBody,
+} from '../shared/models/people-messages-model';
+import {
+  GroupMessagesResponseBody,
+  GroupMessagesStateBody,
+} from '../shared/models/group-messages-model';
 import {
   CreatedGroupItem,
   GroupListResponseBody,
 } from '../shared/models/groups-model';
-import { PeopleListResponseBody } from '../shared/models/people-models';
-import { ProfileResponseBody } from '../shared/models/profile-models';
+import {
+  PeopleConversationsListResponseBody,
+  PeopleListResponseBody,
+} from '../shared/models/people-model';
+import { ProfileResponseBody } from '../shared/models/profile-model';
 
 export interface ConnectionsState {
   profile: ProfileResponseBody;
@@ -13,8 +22,11 @@ export interface ConnectionsState {
   groupList: GroupListResponseBody;
   peopleList: PeopleListResponseBody;
   createdGroupList: CreatedGroupItem[];
-  groupMessages: GroupMessagesResponseBody;
-  coversation: ResponseCoversationBody;
+  groupMessages: GroupMessagesStateBody;
+  peopleMessages: PeopleMessagesResponseBody;
+  peopleConversationsList: PeopleConversationsListResponseBody;
+  peopleConversationID: PeopleConversationResonseBody;
+  // coversation: PeopleMessagesResponseBody;
 }
 
 export const initialState: ConnectionsState = {
@@ -42,9 +54,20 @@ export const initialState: ConnectionsState = {
     Items: [],
   },
   createdGroupList: [],
-  groupMessages: {
+  groupMessages: {},
+  // groupMessages: {
+  //   groupID: '',
+  //   Count: 0,
+  //   Items: [],
+  // },
+  peopleMessages: {
     Count: 0,
     Items: [],
   },
-  coversation: { conversationID: ""},
+  peopleConversationID: { conversationID: '' },
+  peopleConversationsList: {
+    Count: 0,
+    Items: [],
+  },
+  // coversation: { conversationID: '' },
 };

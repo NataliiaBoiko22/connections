@@ -1,15 +1,20 @@
 import { createAction, props } from '@ngrx/store';
 import {
-  RequestConversationBody,
-  ResponseCoversationBody,
-} from 'src/app/shared/models/conversation-model';
-import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages';
+  PeopleConversationRequestBody,
+  PeopleConversationResonseBody,
+  PeopleMessagesRequestBody,
+  PeopleMessagesResponseBody,
+} from 'src/app/shared/models/people-messages-model';
+import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages-model';
 import {
   GroupListResponseBody,
   ResponseGroupID,
 } from 'src/app/shared/models/groups-model';
-import { PeopleListResponseBody } from 'src/app/shared/models/people-models';
-import { ProfileResponseBody } from 'src/app/shared/models/profile-models';
+import {
+  PeopleConversationsListResponseBody,
+  PeopleListResponseBody,
+} from 'src/app/shared/models/people-model';
+import { ProfileResponseBody } from 'src/app/shared/models/profile-model';
 
 export const setProfileData = createAction(
   '[Profile] Set Profile Data',
@@ -48,7 +53,7 @@ export const createGroupSuccess = createAction(
 );
 export const deleteGroup = createAction(
   '[Group] Delete Group',
-  props<{ groupID: string }>()
+  props<{ groupID: string; name: string }>()
 );
 export const deleteGroupSuccess = createAction(
   '[Group] Delete Group Success',
@@ -76,11 +81,44 @@ export const sendGroupMessagesDataSuccess = createAction(
   '[Group Messages] Send Group Messages Data  Success',
   props<{ groupID: string; authorID: string; message: string }>()
 );
-export const setConversationData = createAction(
+export const setPeopleMessagesData = createAction(
   '[People Conversation] Set People Conversation Data',
-  props<{ companion: RequestConversationBody }>()
+  props<{ conversationID: string; since?: number }>()
 );
-export const setConversationDataSuccess = createAction(
+export const setPeopleMessagesDataSuccess = createAction(
   '[People Conversation] Set People Conversation Data Success',
-  props<{ conversationID: ResponseCoversationBody }>()
+  props<{ data: PeopleMessagesResponseBody }>()
+);
+
+export const sendPeopleMessagesData = createAction(
+  '[People Messages] Send People Messages Data',
+  props<{ conversationID: string; authorID: string; message: string }>()
+);
+export const sendPeopleMessagesDataSuccess = createAction(
+  '[People Messages] Send People Messages Data  Success',
+  props<{ conversationID: string; authorID: string; message: string }>()
+);
+
+export const setPeopleConversationsListData = createAction(
+  '[People List] Set People Conversations List Data',
+  props<{ data: PeopleConversationsListResponseBody }>()
+);
+
+export const setPeopleConversationID = createAction(
+  '[People List] Set People Conversations ID',
+  props<{ companion: PeopleConversationRequestBody }>()
+);
+
+export const setPeopleConversationIDSuccess = createAction(
+  '[People List] Set People Conversations ID Success',
+  props<{ conversationID: PeopleConversationResonseBody }>()
+);
+
+export const deletePeopleConversation = createAction(
+  '[People Conversation] Delete People Conversation',
+  props<{ conversationID: string }>()
+);
+export const deletePeopleConversationSuccess = createAction(
+  '[People Conversation] Delete People Conversation Success',
+  props<{ conversationID: string }>()
 );

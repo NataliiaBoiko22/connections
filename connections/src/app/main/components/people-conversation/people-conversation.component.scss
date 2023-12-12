@@ -1,0 +1,29 @@
+.people-messages {
+  display: flex;
+  flex-direction: column;
+  &__form {
+    display: flex;
+    width: 100%;
+  }
+  &__form-input {
+    width: 500px;
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-radius: 5px;
+  }
+  &__message-right > li {
+    align-items: flex-end;
+
+    border: 1px solid red;
+  }
+  &__message-left > li {
+    align-items: flex-start;
+
+    border: 1px solid green;
+  }
+}

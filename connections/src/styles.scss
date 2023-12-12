@@ -4,4 +4,20 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  background-color: #f6f6f6;
+  min-width: 1068px;
+  overflow: auto;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
