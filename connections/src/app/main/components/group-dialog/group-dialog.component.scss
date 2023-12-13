@@ -1,10 +1,25 @@
+.button-group {
+  position: fixed;
+  top: 30px;
+  padding: 40px;
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  &__right {
+    display: flex;
+    gap: 30px;
+  }
+}
+
 .group-messages {
   display: flex;
+  padding-top: 30px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 550px;
+  width: 750px;
   margin: 0 auto;
+
   &__form {
     display: flex;
     width: 100%;

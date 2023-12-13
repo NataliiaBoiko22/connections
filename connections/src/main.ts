@@ -25,9 +25,13 @@ import {
 import { provideStore, StoreModule } from '@ngrx/store';
 import { EffectsModule, provideEffects } from '@ngrx/effects';
 import { connectionsReducer } from './app/Store/reducers/reducers';
-import { ConnectionsEffects } from './app/Store/effects/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { TuiPromptModule } from '@taiga-ui/kit';
+import { AuthEffects } from './app/Store/effects/auth.effects';
+import { GroupEffects } from './app/Store/effects/group.effects';
+import { PeopleEffects } from './app/Store/effects/people.effects';
+import { GroupDialogEffects } from './app/Store/effects/group-dialog.effects';
+import { PeopleConversationEffects } from './app/Store/effects/people-conversation.effects';
 // import { CustomErrorHandler } from './app/shared/services/custom-error-handler.service';
 // import { CustomErrorHandler } from './app/shared/services/custom-error-handler.service';
 
@@ -46,7 +50,13 @@ bootstrapApplication(AppComponent, {
       TuiModeModule,
       TuiLoaderModule,
       StoreModule.forRoot({}),
-      EffectsModule.forRoot([ConnectionsEffects])
+      EffectsModule.forRoot([
+        AuthEffects,
+        GroupEffects,
+        PeopleEffects,
+        GroupDialogEffects,
+        PeopleConversationEffects,
+      ])
     ),
     // {
     //   provide: ErrorHandler,

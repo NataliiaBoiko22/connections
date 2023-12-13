@@ -1,8 +1,7 @@
 <tui-theme-night *ngIf="night$ | async"></tui-theme-night>
 
 <tui-app-bar class="color gray header">
-  <button tuiButton tuiSlot="left">Cancel</button>
-  <!-- <label tuiLabel="More interesting title">Taiga UI</label> -->
+  <button tuiButton tuiSlot="left" (click)="toManePage()">Main</button>
   <tui-icon
     icon="tuiIconSun"
     *ngIf="night$ | async"
@@ -20,7 +19,6 @@
     *ngIf="!(night$ | async)"
     class="theme-icon"
   ></tui-icon>
-    <button tuiButton tuiSlot="right" (click)="toManePage()">Mane</button>
 
   <button tuiButton tuiSlot="right" (click)="toProfilePage()">Profile</button>
 

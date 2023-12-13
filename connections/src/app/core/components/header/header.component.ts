@@ -8,6 +8,7 @@ import {
 import { TuiAppBarModule } from '@taiga-ui/addon-mobile';
 import {
   TuiBrightness,
+  TuiButtonModule,
   TuiModeModule,
   TuiThemeNightModule,
 } from '@taiga-ui/core';
@@ -35,6 +36,7 @@ import { AbstractTuiThemeSwitcher } from '@taiga-ui/cdk';
     TuiIconModule,
     RouterModule,
     TuiModeModule,
+    TuiButtonModule,
   ],
   providers: [ThemeNightService, NgModel],
 })

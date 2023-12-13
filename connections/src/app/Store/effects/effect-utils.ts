@@ -11,6 +11,17 @@ import {
   selectPeopleMessagesById,
 } from '../selectors/selectors';
 
+export function createHeaders(): Record<string, string> {
+  const userId = localStorage.getItem('uid') as string;
+  const userEmail = localStorage.getItem('email') as string;
+  const authToken = localStorage.getItem('token') as string;
+
+  return {
+    'rs-uid': userId,
+    'rs-email': userEmail,
+    Authorization: `Bearer ${authToken}`,
+  };
+}
 export function transformUnixTimestampToReadableDate(
   timestamp: string,
   userTimezone: string = 'UTC'
@@ -42,20 +53,6 @@ export function transformUnixTimestampToReadableDate(
   return timestamp;
 }
 
-// export function getLastReceivedTimestamp(
-//   groupMessages: GroupMessagesResponseBody
-// ): number {
-//   let maxTimestamp = 0;
-
-//   for (const message of groupMessages.Items) {
-//     const timestamp = Number(message.createdAt.S);
-//     if (timestamp > maxTimestamp) {
-//       maxTimestamp = timestamp;
-//     }
-//   }
-
-//   return maxTimestamp;
-// }
 export function getLastReceivedTimestampGroup(
   groupMessages: GroupMessagesResponseBody,
   groupID: string,
