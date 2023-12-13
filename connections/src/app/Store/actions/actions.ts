@@ -2,7 +2,6 @@ import { createAction, props } from '@ngrx/store';
 import {
   PeopleConversationRequestBody,
   PeopleConversationResonseBody,
-  PeopleMessagesRequestBody,
   PeopleMessagesResponseBody,
 } from 'src/app/shared/models/people-messages-model';
 import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages-model';
@@ -60,10 +59,6 @@ export const deleteGroupSuccess = createAction(
   props<{ groupID: string }>()
 );
 
-// export const setGroupMessagesData = createAction(
-//   '[Group Messages] Set Group Messages Data',
-//   props<{ groupID: string }>()
-// );
 export const setGroupMessagesData = createAction(
   '[Group Messages] Set Group Messages Data',
   props<{ groupID: string; since?: number }>()
@@ -111,7 +106,10 @@ export const setPeopleConversationID = createAction(
 
 export const setPeopleConversationIDSuccess = createAction(
   '[People List] Set People Conversations ID Success',
-  props<{ conversationID: PeopleConversationResonseBody }>()
+  props<{
+    conversationID: PeopleConversationResonseBody;
+    companion: PeopleConversationRequestBody;
+  }>()
 );
 
 export const deletePeopleConversation = createAction(

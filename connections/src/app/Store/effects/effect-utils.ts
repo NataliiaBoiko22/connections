@@ -1,5 +1,4 @@
 import { select, Store } from '@ngrx/store';
-import { map, Observable, take } from 'rxjs';
 import { GroupMessagesResponseBody } from 'src/app/shared/models/group-messages-model';
 import { PeopleMessagesResponseBody } from 'src/app/shared/models/people-messages-model';
 import {
@@ -77,32 +76,10 @@ export function getLastReceivedTimestampGroup(
         }
       }
     });
-  console.log(
-    'maxTimestampStore getLastReceivedTimestampGroup',
-    maxTimestampStore
-  );
-  console.log(
-    'maxTimestampRequest getLastReceivedTimestampGroup',
-    maxTimestampRequest
-  );
   let maxTimestamp = Math.max(maxTimestampRequest, maxTimestampStore);
-  console.log('maxTimestamp getLastReceivedTimestampGroup', maxTimestamp);
   return maxTimestamp;
 }
-// export function getLastReceivedTimestampPeople(
-//   peopleMessages: PeopleMessagesResponseBody
-// ): number {
-//   let maxTimestamp = 0;
 
-//   for (const message of peopleMessages.Items) {
-//     const timestamp = Number(message.createdAt.S);
-//     if (timestamp > maxTimestamp) {
-//       maxTimestamp = timestamp;
-//     }
-//   }
-
-//   return maxTimestamp;
-// }
 export function getLastReceivedTimestampPeople(
   peopleMessages: PeopleMessagesResponseBody,
   conversationID: string,
@@ -128,16 +105,7 @@ export function getLastReceivedTimestampPeople(
       }
     });
 
-  console.log(
-    'maxTimestampStore getLastReceivedTimestampPeople',
-    maxTimestampStore
-  );
-  console.log(
-    'maxTimestampRequest getLastReceivedTimestampPeople',
-    maxTimestampRequest
-  );
   let maxTimestamp = Math.max(maxTimestampRequest, maxTimestampStore);
-  console.log('maxTimestamp getLastReceivedTimestampPeople', maxTimestamp);
   return maxTimestamp;
 }
 

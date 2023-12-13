@@ -18,7 +18,10 @@ import {
   PeopleMessagesRequestBody,
   PeopleMessagesResponseBody,
 } from 'src/app/shared/models/people-messages-model';
-import { NotificationService } from 'src/app/shared/services/notification.service';
+import {
+  NotificationService,
+  toastTypes,
+} from 'src/app/shared/services/notification.service';
 import {
   deletePeopleConversation,
   deletePeopleConversationSuccess,
@@ -131,12 +134,11 @@ export class PeopleConversationEffects {
           .pipe(
             take(1),
             tap(() => {
-              this.dialogService
-                .open('Your conversation removed successfully!', {
-                  label: 'Success',
-                  size: 's',
-                })
-                .subscribe();
+              this.notificationService.initiate({
+                title: 'Success',
+                content: `Your conversation removed successfully!`,
+                type: toastTypes.success,
+              });
             }),
             map(() =>
               deletePeopleConversationSuccess({

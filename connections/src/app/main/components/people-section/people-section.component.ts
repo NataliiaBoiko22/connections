@@ -7,8 +7,6 @@ import { TuiInputModule } from '@taiga-ui/kit';
 import {
   BehaviorSubject,
   interval,
-  map,
-  Observable,
   Subscription,
   take,
 } from 'rxjs';
@@ -19,7 +17,6 @@ import {
 import { setPeopleConversationID } from 'src/app/Store/actions/actions';
 import {
   selectPeopleConversationID,
-  selectPeopleConversationsList,
   selectPeopleList,
 } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
@@ -34,10 +31,13 @@ import { CountdownService } from '../../services/countdown.service';
 })
 export class PeopleSectionComponent {
   public peopleListData$ = this.store.select(selectPeopleList);
+  public peopleListConversationId$ = this.store.select(
+    selectPeopleConversationID
+  );
+
   public countdown$ = new BehaviorSubject<number>(0);
   public isCountdownActive = false;
   private countdownSubscription!: Subscription;
-
   constructor(
     private store: Store,
     private countdownService: CountdownService,
@@ -45,21 +45,12 @@ export class PeopleSectionComponent {
   ) {}
 
   ngOnInit(): void {
-    // this.store.dispatch({ type: '[People List] Set People List Data' });
     this.store.pipe(select(selectPeopleList), take(1)).subscribe((data) => {
       const isPeopleListEmpty = this.isPeopleListEmpty(data);
       if (isPeopleListEmpty) {
         this.store.dispatch({ type: '[People List] Set People List Data' });
-        // this.store.dispatch({
-        //   type: '[People List] Set People Conversations List Data',
-        // });
       }
     });
-    // this.store.pipe(select(selectPeopleConversationsList), take(1)).subscribe((data) =>
-    // {
-
-    // }
-    // this.peopleListData$ = this.store.select(selectPeopleList);
     this.observeCountdown();
   }
   private startCountdown(): void {
@@ -98,8 +89,18 @@ export class PeopleSectionComponent {
     this.startCountdown();
   }
 
-  onPeopleConversationPage(uid: string, hasConversation: boolean): void {
+  onPeopleConversationPage(
+    uid: string,
+    hasConversation: boolean,
+    conversationId: string
+  ): void {
+    console.log('onPeopleConversationPage =>>>>');
     if (!hasConversation) {
+      console.log(
+        'onPeopleConversationPage if (!hasConversation)',
+        hasConversation
+      );
+
       this.store.dispatch(
         setPeopleConversationID({
           companion: {
@@ -107,30 +108,25 @@ export class PeopleSectionComponent {
           },
         })
       );
-      this.store.pipe(select(selectPeopleConversationID)).subscribe((state) => {
-        const conversationID = state.conversationID;
-        console.log('select(selectPeopleConversationID)', conversationID);
-        if (conversationID) {
-          this.router.navigate(['/conversation', conversationID]);
+
+      this.peopleListConversationId$.subscribe((conversationID) => {
+        if (conversationID.conversationID !== '') {
+          console.log(
+            'Existing Conversation ID:',
+            conversationID.conversationID
+          );
+          this.router.navigate([
+            '/conversation',
+            conversationID.conversationID,
+          ]);
         }
       });
     } else {
-      this.store
-        .select(selectPeopleConversationsList)
-        .pipe(
-          map((conversations) =>
-            conversations.Items.find(
-              (conversation) => conversation.companionID.S === uid
-            )
-          )
-        )
-        .subscribe((existingConversation) => {
-          if (existingConversation) {
-            const conversationID = existingConversation.id.S;
-            console.log('Existing Conversation ID:', conversationID);
-            this.router.navigate(['/conversation', conversationID]);
-          }
-        });
+      console.log(
+        'onPeopleConversationPage if (hasConversation)',
+        hasConversation
+      );
+      this.router.navigate(['/conversation', conversationId]);
     }
   }
 

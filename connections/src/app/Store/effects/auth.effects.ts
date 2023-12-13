@@ -3,7 +3,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TuiDialogService } from '@taiga-ui/core';
 import { HttpService } from 'src/app/core/services/http.service';
-import { NotificationService } from 'src/app/shared/services/notification.service';
+import {
+  NotificationService,
+  toastTypes,
+} from 'src/app/shared/services/notification.service';
 
 import {
   catchError,
@@ -68,6 +71,13 @@ export class AuthEffects {
         const headers = createHeaders();
         return this.httpService.editProfile({ headers }, data).pipe(
           map(() => updateName({ name: data.name })),
+          tap(() => {
+            this.notificationService.initiate({
+              title: 'Success',
+              content: `Your name have updated to ${data.name} successfully!`,
+              type: toastTypes.success,
+            });
+          }),
           catchError(() => EMPTY)
         );
       })
@@ -83,12 +93,11 @@ export class AuthEffects {
         return this.httpService.deleteLogin({ headers }).pipe(
           take(1),
           tap(() => {
-            this.dialogService
-              .open('You have logged out successfully!', {
-                label: 'Success',
-                size: 's',
-              })
-              .subscribe();
+            const name = this.notificationService.initiate({
+              title: 'Success',
+              content: `See You later!`,
+              type: toastTypes.success,
+            });
           }),
           switchMap(() => of(deleteLoginSuccess())),
           catchError(() => of({ type: 'ERROR_ACTION' })),

@@ -1,8 +1,20 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TuiDialogService } from '@taiga-ui/core';
-import { catchError, EMPTY, exhaustMap, map, mergeMap, take, tap } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  EMPTY,
+  exhaustMap,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { HttpService } from 'src/app/core/services/http.service';
 
 import {
@@ -41,12 +53,16 @@ export class PeopleEffects {
                 map(
                   (conversationsData: PeopleConversationsListResponseBody) => {
                     mergedData.forEach((person) => {
-                      person.hasConversation = conversationsData.Items.some(
+                      const conversation = conversationsData.Items.find(
                         (conversation) =>
                           conversation.companionID.S === person.uid.S
                       );
-                    });
 
+                      if (conversation) {
+                        person.hasConversation = true;
+                        person.conversationId = conversation.id.S;
+                      }
+                    });
                     this.store.dispatch(
                       setPeopleListData({
                         data: { Count: mergedData.length, Items: mergedData },
@@ -72,14 +88,16 @@ export class PeopleEffects {
   createPeopleConversation$ = createEffect(() =>
     this.actions$.pipe(
       ofType(setPeopleConversationID),
-      exhaustMap((action) => {
+      concatMap((action) => {
         const headers = createHeaders();
         const body = { companion: action.companion };
         console.log('effect createPeopleConversation$ ', body);
 
         return this.httpService
           .createPeopleConversation(body.companion, { headers })
+
           .pipe(
+            take(1),
             tap((conversationID) =>
               console.log(
                 'createPeopleConversation conversationID:',
@@ -87,8 +105,12 @@ export class PeopleEffects {
               )
             ),
             map((conversationID) =>
-              setPeopleConversationIDSuccess({ conversationID })
+              setPeopleConversationIDSuccess({
+                conversationID,
+                companion: action.companion,
+              })
             ),
+
             catchError(() => EMPTY)
           );
       })
@@ -98,8 +120,8 @@ export class PeopleEffects {
   constructor(
     private actions$: Actions,
     private httpService: HttpService,
-    private dialogService: TuiDialogService,
     private store: Store,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 }

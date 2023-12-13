@@ -27,7 +27,13 @@
         >
           <li
             class="tui-list__item people__item"
-            (click)="onPeopleConversationPage(item.uid.S, item.hasConversation)"
+            (click)="
+              onPeopleConversationPage(
+                item.uid.S,
+                item.hasConversation,
+                item.conversationId
+              )
+            "
             [ngClass]="{ 'has-conversation': item.hasConversation }"
           >
             {{ item.name.S }}

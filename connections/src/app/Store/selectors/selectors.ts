@@ -8,7 +8,6 @@ export const selectProfileData = createSelector(
   selectConnectionsState,
   (state) => state.profile
 );
-
 export const selectEmailError = createSelector(
   selectConnectionsState,
   (state) => state.emailError
@@ -33,32 +32,16 @@ export const selectCreatedGroupList = createSelector(
   selectConnectionsState,
   (state) => state.createdGroupList
 );
-// export const selectGroupMessages = createSelector(
-//   selectConnectionsState,
-//   (state) => state.groupMessages
-// );
 export const selectGroupMessagesById = (groupID: string) =>
   createSelector(
     selectConnectionsState,
     (state) => state.groupMessages[groupID]
   );
-  export const selectPeopleMessagesById = (conversationID: string) =>
-    createSelector(
-      selectConnectionsState,
-      (state) => state.peopleMessages[conversationID]
-    );
-// export const selectGroupMessagesById = (groupID: string) =>
-//   createSelector(selectConnectionsState, (state) => {
-//     const groupMessages = state.groupMessages;
-//     const groupMessage = Object.values(groupMessages).find(
-//       (message) => message === groupID
-//     );
-//     return groupMessage || { groupID: '', Count: 0, Items: [] };
-//   });
-// export const selectGroupMessagesById = (groupID: string) =>
-//   createSelector(selectConnectionsState, (state) => {
-//     return state.groupMessages.groupID === groupID;
-//   });
+export const selectPeopleMessagesById = (conversationID: string) =>
+  createSelector(
+    selectConnectionsState,
+    (state) => state.peopleMessages[conversationID]
+  );
 
 export const selectPeopleMessages = createSelector(
   selectConnectionsState,

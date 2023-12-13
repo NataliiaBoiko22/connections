@@ -22,10 +22,14 @@
 
   &__form {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
     width: 100%;
   }
   &__form-input {
     width: 500px;
+    margin: 0 10px;
   }
 
   &__message {
@@ -37,7 +41,7 @@
   }
   &__message-right > li {
     align-items: flex-end;
-    width: 300px;
+    width: 600px;
     overflow: hidden;
     white-space: pre-line;
     word-break: break-all;
@@ -47,7 +51,7 @@
   }
   &__message-left > li {
     align-items: flex-start;
-    width: 300px;
+    width: 600px;
     overflow: hidden;
     white-space: pre-line;
     word-break: break-all;

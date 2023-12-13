@@ -39,6 +39,10 @@
     font-size: 16px;
     color: var(--tui-base-08);
     font-weight: 600;
+    cursor: pointer;
+  }
+  &__item:hover {
+    box-shadow: 0 0 8px var(--tui-primary-active);
   }
   &__buttons {
     display: flex;
@@ -57,5 +61,5 @@
   }
 }
 .has-conversation {
-  color: #e31f09;
+  background-color: var(--tui-autofill);
 }

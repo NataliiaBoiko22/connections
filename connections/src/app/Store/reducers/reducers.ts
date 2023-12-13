@@ -21,8 +21,8 @@ import { initialState } from '../state.models';
 
 export const connectionsReducer = createReducer(
   initialState,
-  on(setProfileData, (connectionsState, { data }) => ({
-    ...connectionsState,
+  on(setProfileData, (state, { data }) => ({
+    ...state,
     profile: data,
   })),
   on(updateName, (state, { name }) => {
@@ -73,35 +73,7 @@ export const connectionsReducer = createReducer(
       createdGroupList: updatedOwnGroups,
     };
   }),
-  // on(setGroupMessagesDataSuccess, (state, { data }) => {
-  //   return {
-  //     ...state,
-  //     groupMessages: data,
-  //   };
-  // }),
-  // on(setGroupMessagesDataSuccess, (state, { data }) => {
-  //   const existingGroupIndex = state.groupMessages.groupID === data.groupID;
 
-  //   if (existingGroupIndex !== -1) {
-  //     // Если группа уже существует в стейте, заменяем сообщения
-  //     const updatedGroupMessages = { ...state.groupMessages };
-  //     updatedGroupMessages.Items[existingGroupIndex] = data;
-
-  //     return {
-  //       ...state,
-  //       groupMessages: updatedGroupMessages,
-  //     };
-  //   } else {
-  //     // Если группы еще нет в стейте, добавляем новую группу
-  //     const updatedGroupMessages = { ...state.groupMessages };
-  //     updatedGroupMessages.Items = [...updatedGroupMessages.Items, data];
-
-  //     return {
-  //       ...state,
-  //       groupMessages: updatedGroupMessages,
-  //     };
-  //   }
-  // }),
   on(setGroupMessagesDataSuccess, (state, { data }) => {
     const updatedGroupMessages = {
       ...state.groupMessages,
@@ -114,26 +86,6 @@ export const connectionsReducer = createReducer(
     };
   }),
 
-  // on(sendGroupMessagesDataSuccess, (state, { groupID, authorID, message }) => {
-  //   return {
-  //     ...state,
-  //     groupMessages: {
-  //       groupID: groupID,
-  //       Count: state.groupMessages.Count + 1,
-  //       Items: [
-  //         ...state.groupMessages.Items,
-  //         {
-  //           authorID: { S: authorID },
-  //           message: { S: message },
-  //           createdAt: {
-  //             S: new Date().getTime().toString(),
-  //           },
-  //           authorName: 'Me',
-  //         },
-  //       ],
-  //     },
-  //   };
-  // }),
   on(sendGroupMessagesDataSuccess, (state, { groupID, authorID, message }) => {
     const group = state.groupMessages[groupID];
     const newMessage = {
@@ -169,12 +121,28 @@ export const connectionsReducer = createReducer(
       peopleMessages: updatedPeopleMessages,
     };
   }),
-  // on(setPeopleConversationIDSuccess, (state, { conversationID }) => {
-  //   return {
-  //     ...state,
-  //     peopleConversationID: conversationID,
-  //   };
-  // }),
+
+  on(setPeopleConversationIDSuccess, (state, { conversationID, companion }) => {
+    const updatedPeopleList = state.peopleList.Items.map((person) => {
+      if (person.uid.S === companion.companion) {
+        return {
+          ...person,
+          hasConversation: true,
+          conversationId: conversationID.conversationID,
+        };
+      }
+      return person;
+    });
+
+    return {
+      ...state,
+      peopleList: {
+        Count: updatedPeopleList.length,
+        Items: updatedPeopleList,
+      },
+      peopleConversationID: conversationID,
+    };
+  }),
   on(setPeopleConversationsListData, (state, { data }) => {
     return {
       ...state,
@@ -209,33 +177,6 @@ export const connectionsReducer = createReducer(
     }
   ),
 
-  // on(deletePeopleConversationSuccess, (state, { conversationID }) => {
-  //   const updatedConversationsList = state.peopleConversationsList.Items.filter(
-  //     (coversation) => coversation.id.S !== conversationID
-  //   );
-  //   const updatedPeopleList = state.peopleList.Items.map((person) => {
-  //     if (person.hasConversation && person.uid === coversation.companionID.S) {
-  //       return {
-  //         ...person,
-  //         hasConversation: false,
-  //         conversationID: '', // Опционально: обнулить идентификатор беседы
-  //       };
-  //     }
-  //     return person;
-  //   });
-
-  //   return {
-  //     ...state,
-  //     peopleConversationsList: {
-  //       Count: updatedConversationsList.length,
-  //       Items: updatedConversationsList,
-  //     },
-  //     peopleList: {
-  //       Count: updatedPeopleList.length,
-  //       Items: updatedPeopleList,
-  //     },
-  //   };
-  // })
   on(deletePeopleConversationSuccess, (state, { conversationID }) => {
     const updatedConversationsList = state.peopleConversationsList.Items.filter(
       (conversation) => conversation.id.S !== conversationID
@@ -265,25 +206,4 @@ export const connectionsReducer = createReducer(
       },
     };
   })
-
-  // on(deletePeopleConversationSuccess, (state, { conversationID }) => {
-  //   const updatedPeopleList = state.peopleList.Items.map((person) => {
-  //     if (person.hasConversation && person.conversationID === conversationID) {
-  //       return {
-  //         ...person,
-  //         hasConversation: false,
-  //         conversationID: '', // Опционально: обнулить идентификатор беседы
-  //       };
-  //     }
-  //     return person;
-  //   });
-
-  //   return {
-  //     ...state,
-  //     peopleList: {
-  //       Count: updatedPeopleList.length,
-  //       Items: updatedPeopleList,
-  //     },
-  //   };
-  // })
 );

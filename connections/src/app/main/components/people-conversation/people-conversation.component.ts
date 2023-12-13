@@ -64,10 +64,8 @@ export class PeopleConversationComponent {
   public currentUserId = localStorage.getItem('uid') as string;
 
   public countdown$ = new BehaviorSubject<number>(0);
-  // private countdownsMapPeople = new Map<string, BehaviorSubject<number>>();
 
   public isCountdownActive = false;
-  // private countdownSubscription!: Subscription;
   public conversationID!: string;
   public createdBy!: string;
 
@@ -160,11 +158,6 @@ export class PeopleConversationComponent {
         lastTimestampInPeople
       );
 
-      console.log(
-        'this.startCountdown(groupID, lastTimestamp);',
-        conversationID,
-        lastTimestampInPeople
-      );
       this.startCountdown(conversationID, lastTimestampInPeople);
     }
   }
@@ -172,11 +165,8 @@ export class PeopleConversationComponent {
     conversationID: string,
     lastTimestampInPeople: number
   ): void {
-    // console.log('startCountdown( conversationID', conversationID);
-    // console.log('startCountdown( lastTimestampInPeople', lastTimestampInPeople);
     const countdown$ =
       this.countdownService.getCountdownForPeopleConversation(conversationID);
-    console.log('startCountdown( countdown$', countdown$);
     if (countdown$) {
       const startTime = Math.floor(new Date().getTime() / 1000);
       const initialElapsedTime = Math.max(
@@ -212,12 +202,6 @@ export class PeopleConversationComponent {
       !data || (data.Count === 0 && (!data.Items || data.Items.length === 0))
     );
   }
-  // private observeCountdown() {
-  //   this.countdownService.getCountdownGroupMessages().subscribe((countdown) => {
-  //     this.countdown$.next(countdown);
-  //     this.isCountdownActive = countdown !== null && countdown > 0;
-  //   });
-  // }
   onBackToMainButton() {
     this.router.navigate(['']);
   }
@@ -248,7 +232,6 @@ export class PeopleConversationComponent {
     this.router.navigate(['']);
   }
   onUpdatePeopleConversationButton(): void {
-    console.log('onUpdatePeopleConversationButton');
     this.store
       .pipe(select(selectPeopleMessagesById(this.conversationID)), take(1))
       .subscribe((data) => {
@@ -256,11 +239,6 @@ export class PeopleConversationComponent {
           data.lastTimestampInPeople !== undefined &&
           data.lastTimestampInPeople > 0
         ) {
-          console.log(
-            'Max timestamp from ngOnInit:',
-            data.lastTimestampInPeople
-          );
-
           this.store.dispatch(
             setPeopleMessagesData({
               conversationID: this.conversationID,
@@ -304,15 +282,11 @@ export class PeopleConversationComponent {
 
   onSendMessagePeople() {
     if (this.sendPeopleMessageForm.invalid) {
-      console.log(' if (this.sendMessageForm.invalid)');
       return;
     }
     const message = this.sendPeopleMessageForm.get('peopleMessage')
       ?.value as string;
-    console.log('onSendMessage', {
-      conversationID: this.conversationID,
-      message,
-    });
+
     this.store.dispatch(
       sendPeopleMessagesData({
         conversationID: this.conversationID,

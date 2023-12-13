@@ -26,9 +26,6 @@ import {
 } from '@taiga-ui/kit';
 import { TUI_VALIDATION_ERRORS } from '@taiga-ui/kit';
 import {
-  BehaviorSubject,
-  combineLatest,
-  forkJoin,
   interval,
   map,
   Observable,
@@ -76,10 +73,6 @@ import { setEmailError } from 'src/app/Store/actions/actions';
       useValue: {
         required: 'Enter this!',
         email: 'Enter a valid email',
-        // maxlength: ({requiredLength}: {requiredLength: string}) =>
-        //     `Maximum length — ${requiredLength}`,
-        // minlength: ({requiredLength}: {requiredLength: string}) =>
-        //     of(`Minimum length — ${requiredLength}`),
         password: interval(2000).pipe(
           scan(tuiIsFalsy, false),
           map((val) =>
@@ -113,11 +106,7 @@ export class SignupComponent {
     ]),
   });
 
-  // controlName = this.authForm.get('name') as FormControl;
-
   controlEmail = this.authForm.get('email') as FormControl;
-
-  // controlPassword = this.authForm.get('password') as FormControl;
 
   constructor(private authService: AuthService, private store: Store) {
     this.authForm.valueChanges.subscribe(() => {
@@ -126,8 +115,6 @@ export class SignupComponent {
   }
 
   onSingUpButton(): void {
-    // this.isRegistrationButtonDisabled = true;
-    // this.emailError = false;
     if (this.authForm.invalid) {
       return;
     }

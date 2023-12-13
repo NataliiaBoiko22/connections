@@ -70,11 +70,6 @@ export class SigninComponent {
     ]),
   });
 
-  // controlEmail = this.authForm.get('email') as FormControl;
-
-  // controlPassword = this.authForm.get('password') as FormControl;
-
-  // constructor(private auth: AuthService) {}
   constructor(private authService: AuthService) {
     this.authForm.valueChanges.subscribe(() => {
       this.authForm.markAsTouched();

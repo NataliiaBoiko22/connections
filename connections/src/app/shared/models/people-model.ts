@@ -11,6 +11,7 @@ export interface PeopleItem {
     S: string;
   };
   hasConversation: boolean;
+  conversationId: string;
 }
 
 export interface PeopleConversationsListResponseBody {

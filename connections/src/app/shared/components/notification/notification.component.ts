@@ -206,7 +206,7 @@ export class NotificationComponent implements OnInit {
   }
 
   private closeAfterDelay() {
-    timer(2500)
+    timer(3500)
       .pipe(take(1))
       .subscribe(() => {
         this.isOpen = false;

@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  HostListener,
   OnInit,
 } from '@angular/core';
 import {
@@ -25,21 +24,14 @@ import {
   BehaviorSubject,
   interval,
   map,
-  Observable,
-  Subscription,
   switchMap,
   take,
-  tap,
 } from 'rxjs';
 import {
   GroupMessage,
   GroupMessagesResponseBody,
-  GroupMessagesStateBody,
 } from 'src/app/shared/models/group-messages-model';
-import {
-  GroupListResponseBody,
-  ResponseGroupID,
-} from 'src/app/shared/models/groups-model';
+
 import {
   deleteGroup,
   sendGroupMessagesData,
@@ -48,7 +40,6 @@ import {
 import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/effect-utils';
 import {
   selectGroupMessagesById,
-  selectProfileData,
 } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
 
@@ -70,10 +61,8 @@ import { CountdownService } from '../../services/countdown.service';
   ],
 })
 export class GroupDialogComponent implements OnInit {
-  // public userId = localStorage.getItem('uid') as string;
   public currentUserId = localStorage.getItem('uid') as string;
   public countdown$ = new BehaviorSubject<number>(0);
-  // private countdownsMap = new Map<string, BehaviorSubject<number>>();
   public isCountdownActive = false;
   public groupID!: string;
   public createdBy!: string;
@@ -158,28 +147,6 @@ export class GroupDialogComponent implements OnInit {
       this.isCountdownActive = countdown !== null && countdown > 0;
     });
   }
-  // private initializeCountdowns(
-  //   groupID: string,
-  //   lastTimestampInGroup: number
-  // ): void {
-  //   const countdown$ =
-  //     this.countdownService.getCountdownForGroupDialog(groupID);
-  //   if (!countdown$.value) {
-  //     this.countdownService.setCountdownForGroupDialog(
-  //       groupID,
-  //       lastTimestampInGroup
-  //     );
-
-  //     // this.countdownsMap.set(groupID, countdown$);
-  //     // console.log('countdownsMap:', Object.fromEntries(this.countdownsMap));
-  //     console.log(
-  //       'this.startCountdown(groupID, lastTimestamp);',
-  //       groupID,
-  //       lastTimestampInGroup
-  //     );
-  //     this.startCountdown(groupID, lastTimestampInGroup);
-  //   }
-  // }
   private initializeCountdowns(
     groupID: string,
     lastTimestampInGroup: number
@@ -196,35 +163,6 @@ export class GroupDialogComponent implements OnInit {
     }
   }
 
-  // private startCountdown(
-  //   groupID: string,
-  //   lastTimestampInGroup: number | undefined
-  // ): void {
-  //   // console.log('startCountdown( groupID', groupID);
-  //   // console.log('startCountdown( lastTimestamp', lastTimestampInGroup);
-  //   const countdown$ =
-  //     this.countdownService.getCountdownForGroupDialog(groupID);
-  //   console.log('startCountdown( countdown$', countdown$.getValue);
-  //   if (countdown$) {
-  //     const startTime = Math.floor(new Date().getTime() / 1000);
-  //     const countdownSubscription = interval(1000).subscribe(() => {
-  //       const currentTime = Math.floor(new Date().getTime() / 1000);
-  //       const elapsedTime = currentTime - startTime;
-
-  //       const countdownValue = Math.max(0, Math.min(60, 60 - elapsedTime));
-  //       this.countdown$.next(countdownValue);
-  //       this.countdownService.setCountdownForGroupDialog(
-  //         groupID,
-  //         countdownValue
-  //       );
-
-  //       if (countdownValue <= 0) {
-  //         countdownSubscription.unsubscribe();
-  //       }
-  //       this.cdRef.detectChanges();
-  //     });
-  //   }
-  // }
   private startCountdown(groupID: string, lastTimestampInGroup: number): void {
     const countdown$ =
       this.countdownService.getCountdownForGroupDialog(groupID);

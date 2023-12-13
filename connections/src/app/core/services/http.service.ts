@@ -231,27 +231,7 @@ export class HttpService {
       .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 
-  // public createConversation(
-  //   { headers }: RequestHeaders,
-  //   body: RequestConversationBody
-  // ): Observable<ResponseCoversationBody> {
-  //   console.log('createConversation from httpService');
-
-  //   return this.httpClient
-  //     .post<ResponseCoversationBody>(
-  //       this.url + this.postPeopleConversationPath,
-  //       body,
-  //       {
-  //         headers,
-  //       }
-  //     )
-  //     .pipe(
-  //       catchError((err: HttpErrorResponse) =>
-  //         this.handleHttpError<ResponseCoversationBody>(err)
-  //       )
-  //     );
-  // }
-
+ 
   public getPeopleConversationsList({
     headers,
   }: RequestHeaders): Observable<PeopleConversationsListResponseBody> {
