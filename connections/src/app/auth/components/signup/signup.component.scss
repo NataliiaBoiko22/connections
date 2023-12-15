@@ -23,6 +23,21 @@
     margin: 0 auto 10px;
     gap: 40px;
   }
+  &__question {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 15px;
+    color: var(--tui-primary-hover);
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  &__question-link {
+    display: flex;
+    justify-content: center;
+    color: var(--tui-primary-hover);
+    font-size: 20px;
+  }
 }
 .error {
   border-color: red;

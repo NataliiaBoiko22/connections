@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ThemeNightService } from 'src/app/shared/services/theme-night.service';
 import { GroupSectionComponent } from '../../components/group-section/group-section.component';
 import { PeopleSectionComponent } from '../../components/people-section/people-section.component';
 
@@ -11,4 +12,9 @@ import { PeopleSectionComponent } from '../../components/people-section/people-s
   standalone: true,
   imports: [CommonModule, GroupSectionComponent, PeopleSectionComponent],
 })
-export class MainPageComponent {}
+export class MainPageComponent {
+  constructor(private themeService: ThemeNightService) {}
+  isDarkTheme(): boolean {
+    return this.themeService.isNightThemeValue();
+  }
+}

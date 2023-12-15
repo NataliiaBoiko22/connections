@@ -11,6 +11,7 @@
     size="m"
     class="tui-space_right-1 toggle"
     [ngModel]="night$ | async"
+    [class.dark]="night$ | async"
     (ngModelChange)="onToggleChange()"
   ></tui-toggle>
 

@@ -57,6 +57,7 @@
         tuiButton
         type="button"
         class="tui-form__button"
+        (click)="cancelButtonClick()"
       >
         Cancel
       </button>
@@ -74,6 +75,13 @@
       >
         Submit
       </button>
+    </div>
+    <tr></tr>
+    <div class="registration__question">
+      <span class="registration__question-text"
+        >Do you have an account? Please, login</span
+      >
+      <a class="registration__question-link" routerLink="/signin">"Log In!"</a>
     </div>
   </form>
 </div>

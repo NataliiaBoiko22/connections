@@ -19,8 +19,10 @@ import { routes } from './app/app-routing.module';
 import { AppComponent } from './app/app.component';
 import {
   HttpClientModule,
+  HTTP_INTERCEPTORS,
   provideHttpClient,
   withInterceptors,
+  withInterceptorsFromDi,
 } from '@angular/common/http';
 import { provideStore, StoreModule } from '@ngrx/store';
 import { EffectsModule, provideEffects } from '@ngrx/effects';
@@ -32,8 +34,9 @@ import { GroupEffects } from './app/Store/effects/group.effects';
 import { PeopleEffects } from './app/Store/effects/people.effects';
 import { GroupDialogEffects } from './app/Store/effects/group-dialog.effects';
 import { PeopleConversationEffects } from './app/Store/effects/people-conversation.effects';
-// import { CustomErrorHandler } from './app/shared/services/custom-error-handler.service';
-// import { CustomErrorHandler } from './app/shared/services/custom-error-handler.service';
+import { ErrorHandlingInterceptor } from './app/shared/services/error-handling.interceptor';
+import { CustomErrorHandler } from './app/shared/services/custom-error-handler.service';
+import { ThemeNightService } from './app/shared/services/theme-night.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -56,26 +59,29 @@ bootstrapApplication(AppComponent, {
         PeopleEffects,
         GroupDialogEffects,
         PeopleConversationEffects,
-      ])
+      ]),
+
+      ThemeNightService
     ),
-    // {
-    //   provide: ErrorHandler,
-    //   useClass: CustomErrorHandler,
-    // },
+
+    {
+      provide: ErrorHandler,
+      useClass: CustomErrorHandler,
+    },
     HttpClientModule,
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
     provideAnimations(),
 
-    // withInterceptors([
-    //   loggerInterceptor,
-    //   // They can be inlined too, with full type safety!
-    //   (req, next) => next(req),
-    // ])
     provideStore(),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
     }),
     provideEffects(),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHandlingInterceptor,
+      multi: true,
+    },
   ],
 }).catch((err) => console.error(err));

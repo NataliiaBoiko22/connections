@@ -161,15 +161,19 @@ export class GroupSectionComponent implements OnInit {
     this.groupListData$ = this.store.select(selectGroupList);
   }
 
-  onGroupDialogPage(groupID: string, createdBy: string): void {
+  onGroupDialogPage(
+    groupID: string,
+    createdBy: string,
+    nameOFGroup: string
+  ): void {
     this.router.navigate(['/group', groupID], {
-      queryParams: { createdBy: createdBy },
+      queryParams: { createdBy: createdBy, name: nameOFGroup },
     });
   }
-  onGroupDialogPageFromNewGroup(groupID: string): void {
+  onGroupDialogPageFromNewGroup(groupID: string, nameOFGroup: string): void {
     console.log(' onGroupDialogPageFromNewGroup(groupID: string): void');
     this.router.navigate(['/group', groupID], {
-      queryParams: { createdBy: this.userId },
+      queryParams: { createdBy: this.userId, name: nameOFGroup },
     });
   }
   getSortedGroupList(groupListData: GroupListResponseBody): GroupItem[] {

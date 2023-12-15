@@ -46,7 +46,9 @@
             </button>
             <span
               class="group__item-name"
-              (click)="onGroupDialogPageFromNewGroup(groupItem.groupID)"
+              (click)="
+                onGroupDialogPageFromNewGroup(groupItem.groupID, groupItem.name)
+              "
             >
               {{ groupItem.name }}
             </span>
@@ -70,7 +72,9 @@
             </button>
             <span
               class="group__item-name"
-              (click)="onGroupDialogPage(item.id.S, item.createdBy.S)"
+              (click)="
+                onGroupDialogPage(item.id.S, item.createdBy.S, item.name.S)
+              "
               >{{ item.name.S }}</span
             >
           </li>

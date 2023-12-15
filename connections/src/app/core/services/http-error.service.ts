@@ -10,14 +10,6 @@ import { HttpError } from 'src/app/shared/models/http-model';
 export class HttpErrorService {
   constructor(private dialogService: TuiDialogService) {}
 
-  // catchErrors(err: HttpErrorResponse, isReturnStatus?: boolean): Observable<number> | Observable<never>  {
-  //   if (isReturnStatus !== undefined) {
-  //     return isReturnStatus ? of(err.status) : EMPTY;
-  //   } else {
-  //     return EMPTY;
-  //   }
-  // }
-
   catchErrors(err: HttpErrorResponse): Observable<HttpError> {
     console.log('err fron errr service', err);
     const error: HttpError = {
@@ -35,29 +27,5 @@ export class HttpErrorService {
     return throwError(
       () => new Error('Something bad happened; please try again.')
     );
-    // return throwError(error);
   }
-  // handleHttpError<T>(err: HttpErrorResponse): Observable<T> {
-  //   this.displayErrorDialog(err);
-  //   return EMPTY;
-  // }
-
-  // private displayErrorDialog(err: HttpErrorResponse): void {
-  //   const error: HttpError = {
-  //     status: err.status,
-  //     message: 'An error occurred during the HTTP request.',
-  //     details: err.message, // You may want to customize this based on your needs
-  //   };
-
-  //   // Display the error message in a dialog using this.dialogService
-  //   this.dialogService
-  //     .open('Error', {
-  //       label: 'Error',
-  //       size: 's',
-  //       data: {
-  //         message: error.message,
-  //       },
-  //     })
-  //     .subscribe();
-  // }
 }

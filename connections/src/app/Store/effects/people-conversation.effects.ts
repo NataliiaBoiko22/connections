@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { TuiDialogService } from '@taiga-ui/core';
+import { TUI_PROMPT } from '@taiga-ui/kit';
 import {
   catchError,
   EMPTY,
   exhaustMap,
   map,
   of,
+  switchMap,
   take,
   tap,
   withLatestFrom,
@@ -126,26 +128,43 @@ export class PeopleConversationEffects {
   deletePeopleConversation$ = createEffect(() =>
     this.actions$.pipe(
       ofType(deletePeopleConversation),
-      exhaustMap((action) => {
-        const headers = createHeaders();
-        const params = { conversationID: action.conversationID };
-        return this.httpService
-          .deletePeopleConversation({ headers }, params)
+      switchMap((action) => {
+        return this.dialogService
+          .open<boolean>(TUI_PROMPT, {
+            label: `Do you want to delete this conversation?`,
+            size: 's',
+            data: {
+              yes: 'OK',
+              no: 'No',
+            },
+          })
           .pipe(
-            take(1),
-            tap(() => {
-              this.notificationService.initiate({
-                title: 'Success',
-                content: `Your conversation removed successfully!`,
-                type: toastTypes.success,
-              });
-            }),
-            map(() =>
-              deletePeopleConversationSuccess({
-                conversationID: action.conversationID,
-              })
-            ),
-            catchError(() => of({ type: 'ERROR_ACTION' }))
+            switchMap((response) => {
+              if (response) {
+                const headers = createHeaders();
+                const params = { conversationID: action.conversationID };
+                return this.httpService
+                  .deletePeopleConversation({ headers }, params)
+                  .pipe(
+                    take(1),
+                    tap(() => {
+                      this.notificationService.initiate({
+                        title: 'Success',
+                        content: `Your conversation removed successfully!`,
+                        type: toastTypes.success,
+                      });
+                    }),
+                    map(() =>
+                      deletePeopleConversationSuccess({
+                        conversationID: action.conversationID,
+                      })
+                    ),
+                    catchError(() => of({ type: 'ERROR_ACTION' }))
+                  );
+              } else {
+                return EMPTY;
+              }
+            })
           );
       })
     )

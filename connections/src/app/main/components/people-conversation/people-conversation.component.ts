@@ -19,14 +19,7 @@ import {
   TuiErrorModule,
 } from '@taiga-ui/core';
 import { TuiFieldErrorPipeModule, TuiInputModule } from '@taiga-ui/kit';
-import {
-  BehaviorSubject,
-  interval,
-  map,
-  Subscription,
-  switchMap,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, interval, map, switchMap, take } from 'rxjs';
 import {
   PeopleMessage,
   PeopleMessagesResponseBody,
@@ -37,10 +30,7 @@ import {
   setPeopleMessagesData,
 } from 'src/app/Store/actions/actions';
 import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/effect-utils';
-import {
-  selectPeopleMessages,
-  selectPeopleMessagesById,
-} from 'src/app/Store/selectors/selectors';
+import { selectPeopleMessagesById } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
 
 @Component({
@@ -62,13 +52,10 @@ import { CountdownService } from '../../services/countdown.service';
 })
 export class PeopleConversationComponent {
   public currentUserId = localStorage.getItem('uid') as string;
-
   public countdown$ = new BehaviorSubject<number>(0);
-
   public isCountdownActive = false;
   public conversationID!: string;
   public createdBy!: string;
-
   public peopleMessagesData$ = this.store
     .select(selectPeopleMessagesById(this.conversationID))
     .pipe(

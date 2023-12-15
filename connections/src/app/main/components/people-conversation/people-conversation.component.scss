@@ -52,11 +52,13 @@
   position: fixed;
   top: 30px;
   padding: 40px;
-  width: 90%;
+  gap: 20px;
   display: flex;
+  width: 90%;
   justify-content: space-between;
   &__right {
     display: flex;
+    flex-direction: column;
     gap: 30px;
   }
 }

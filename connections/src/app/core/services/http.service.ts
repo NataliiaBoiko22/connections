@@ -6,6 +6,7 @@ import {
 } from '@angular/common/http';
 import {
   catchError,
+  delay,
   EMPTY,
   Observable,
   switchMap,
@@ -231,7 +232,6 @@ export class HttpService {
       .pipe(catchError((err: HttpErrorResponse) => this.handleHttpError(err)));
   }
 
- 
   public getPeopleConversationsList({
     headers,
   }: RequestHeaders): Observable<PeopleConversationsListResponseBody> {

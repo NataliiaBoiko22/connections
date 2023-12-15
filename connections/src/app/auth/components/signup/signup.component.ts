@@ -41,6 +41,9 @@ import { TuiCardModule } from '@taiga-ui/experimental';
 import { Store } from '@ngrx/store';
 import { selectEmailError } from 'src/app/Store/selectors/selectors';
 import { setEmailError } from 'src/app/Store/actions/actions';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -49,6 +52,7 @@ import { setEmailError } from 'src/app/Store/actions/actions';
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     TuiRootModule,
     TuiDialogModule,
     TuiInputModule,
@@ -108,7 +112,11 @@ export class SignupComponent {
 
   controlEmail = this.authForm.get('email') as FormControl;
 
-  constructor(private authService: AuthService, private store: Store) {
+  constructor(
+    private authService: AuthService,
+    private store: Store,
+    private router: Router
+  ) {
     this.authForm.valueChanges.subscribe(() => {
       this.authForm.markAsTouched();
     });
@@ -132,5 +140,8 @@ export class SignupComponent {
         return of(emailError ? emailError : fieldError ? fieldError : null);
       })
     ) as Observable<string | null>;
+  }
+  cancelButtonClick(): void {
+    this.router.navigate(['/signin']);
   }
 }

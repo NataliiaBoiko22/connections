@@ -8,18 +8,12 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { TuiModeModule } from '@taiga-ui/core';
 import { ThemeNightService } from './shared/services/theme-night.service';
 import { CommonModule } from '@angular/common';
-import { Observable, switchMap, take } from 'rxjs';
+import { Observable } from 'rxjs';
 import { RouterModule } from '@angular/router';
-import {
-  HttpClient,
-  HttpClientModule,
-  HTTP_INTERCEPTORS,
-} from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { SigninComponent } from './auth/components/signin/signin.component';
 import { SignupComponent } from './auth/components/signup/signup.component';
 import { HeaderComponent } from './core/components/header/header.component';
-// import { InterceptorService } from './shared/services/interceptor.service';
-import { LoaderComponent } from './shared/components/loader/loader.component';
 import { TuiPushModule } from '@taiga-ui/kit';
 import { NotificationComponent } from './shared/components/notification/notification.component';
 
@@ -39,20 +33,10 @@ import { NotificationComponent } from './shared/components/notification/notifica
     TuiModeModule,
     SigninComponent,
     SignupComponent,
-    LoaderComponent,
     TuiPushModule,
     NotificationComponent,
   ],
-  providers: [
-    ThemeNightService,
-    HttpClientModule,
-    HttpClient,
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: InterceptorService,
-    //   multi: true,
-    // },
-  ],
+  providers: [ThemeNightService, HttpClientModule, HttpClient],
 })
 export class AppComponent {
   title = 'connections';

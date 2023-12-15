@@ -20,13 +20,7 @@ import {
   TuiErrorModule,
 } from '@taiga-ui/core';
 import { TuiFieldErrorPipeModule, TuiInputModule } from '@taiga-ui/kit';
-import {
-  BehaviorSubject,
-  interval,
-  map,
-  switchMap,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, interval, map, switchMap, take } from 'rxjs';
 import {
   GroupMessage,
   GroupMessagesResponseBody,
@@ -38,9 +32,7 @@ import {
   setGroupMessagesData,
 } from 'src/app/Store/actions/actions';
 import { transformUnixTimestampToReadableDate } from 'src/app/Store/effects/effect-utils';
-import {
-  selectGroupMessagesById,
-} from 'src/app/Store/selectors/selectors';
+import { selectGroupMessagesById } from 'src/app/Store/selectors/selectors';
 import { CountdownService } from '../../services/countdown.service';
 
 @Component({
@@ -97,12 +89,8 @@ export class GroupDialogComponent implements OnInit {
       .pipe(
         switchMap((params) => {
           const groupID = params['groupID'];
-          const name = params['name'];
-
           this.groupID = groupID;
-          this.name = name;
           console.log(this.groupID);
-
           return this.store.pipe(
             select(selectGroupMessagesById(this.groupID)),
             take(1)
@@ -134,6 +122,7 @@ export class GroupDialogComponent implements OnInit {
       });
     this.route.queryParams.subscribe((queryParams) => {
       this.createdBy = queryParams['createdBy'];
+      this.name = queryParams['name'];
     });
     console.log('this.groupMessagesData$', this.groupMessagesData$);
     this.countdown$ = this.countdownService.getCountdownForGroupDialog(
