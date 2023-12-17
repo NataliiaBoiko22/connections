@@ -13,7 +13,7 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { HttpService } from 'src/app/core/services/http.service';
+import { HttpGroupService } from 'src/app/core/services/group-http.service';
 import {
   NotificationService,
   toastTypes,
@@ -106,9 +106,8 @@ export class GroupEffects {
 
   constructor(
     private actions$: Actions,
-    private httpService: HttpService,
+    private httpService: HttpGroupService,
     private dialogService: TuiDialogService,
-    private store: Store,
     private notificationService: NotificationService
   ) {}
 }

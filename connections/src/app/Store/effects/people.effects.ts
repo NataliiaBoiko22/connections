@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { TuiDialogService } from '@taiga-ui/core';
 import {
   catchError,
   concatMap,
@@ -10,19 +8,17 @@ import {
   exhaustMap,
   map,
   mergeMap,
-  of,
-  switchMap,
+
   take,
-  tap,
+
 } from 'rxjs';
-import { HttpService } from 'src/app/core/services/http.service';
+import { HttpPeopleService } from 'src/app/core/services/people-http.service';
 
 import {
   PeopleConversationsListResponseBody,
   PeopleItem,
   PeopleListResponseBody,
 } from 'src/app/shared/models/people-model';
-import { NotificationService } from 'src/app/shared/services/notification.service';
 import {
   setPeopleConversationID,
   setPeopleConversationIDSuccess,
@@ -91,19 +87,11 @@ export class PeopleEffects {
       concatMap((action) => {
         const headers = createHeaders();
         const body = { companion: action.companion };
-        console.log('effect createPeopleConversation$ ', body);
-
         return this.httpService
           .createPeopleConversation(body.companion, { headers })
 
           .pipe(
             take(1),
-            tap((conversationID) =>
-              console.log(
-                'createPeopleConversation conversationID:',
-                conversationID
-              )
-            ),
             map((conversationID) =>
               setPeopleConversationIDSuccess({
                 conversationID,
@@ -119,9 +107,7 @@ export class PeopleEffects {
 
   constructor(
     private actions$: Actions,
-    private httpService: HttpService,
+    private httpService: HttpPeopleService,
     private store: Store,
-    private notificationService: NotificationService,
-    private router: Router
   ) {}
 }

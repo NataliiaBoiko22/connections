@@ -14,7 +14,7 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs';
-import { HttpService } from 'src/app/core/services/http.service';
+import { HttpPeopleConversationService } from 'src/app/core/services/people-conversation-http.service';
 import { ResponseSinceTimestamp } from 'src/app/shared/models/http-model';
 import {
   PeopleMessagesRequestBody,
@@ -50,18 +50,12 @@ export class PeopleConversationEffects {
           since: action.since,
         };
 
-        console.log(
-          'params from effect loadGroupsMessagesData',
-          paramsID,
-          paramsSince
-        );
         return this.httpService
           .getPeopleMessages({ headers }, paramsID, paramsSince)
 
           .pipe(
             take(1),
             map((data: PeopleMessagesResponseBody) => {
-              console.log('data from http in effect', data);
               const lastTimestampInPeople = getLastReceivedTimestampPeople(
                 data,
                 action.conversationID,
@@ -109,10 +103,8 @@ export class PeopleConversationEffects {
           conversationID: action.conversationID,
           message: action.message,
         };
-        console.log('effect sendPeopleMessageData', body, { headers });
 
         return this.httpService.sendPeopleMessages(body, { headers }).pipe(
-          tap(() => console.log('after this.httpService.sendPeopleMessages')),
           map(() =>
             sendPeopleMessagesDataSuccess({
               conversationID: action.conversationID,
@@ -172,7 +164,7 @@ export class PeopleConversationEffects {
 
   constructor(
     private actions$: Actions,
-    private httpService: HttpService,
+    private httpService: HttpPeopleConversationService,
     private dialogService: TuiDialogService,
     private store: Store,
     private notificationService: NotificationService

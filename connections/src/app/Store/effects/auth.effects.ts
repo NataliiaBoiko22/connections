@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { TuiDialogService } from '@taiga-ui/core';
-import { HttpService } from 'src/app/core/services/http.service';
 import {
   NotificationService,
   toastTypes,
@@ -32,6 +29,7 @@ import {
   createHeaders,
   transformUnixTimestampToReadableDate,
 } from './effect-utils';
+import { HttpAuthService } from 'src/app/core/services/auth-http.service';
 
 @Injectable()
 export class AuthEffects {
@@ -93,7 +91,7 @@ export class AuthEffects {
         return this.httpService.deleteLogin({ headers }).pipe(
           take(1),
           tap(() => {
-            const name = this.notificationService.initiate({
+            this.notificationService.initiate({
               title: 'Success',
               content: `See You later!`,
               type: toastTypes.success,
@@ -109,9 +107,7 @@ export class AuthEffects {
 
   constructor(
     private actions$: Actions,
-    private httpService: HttpService,
-    private dialogService: TuiDialogService,
-    private store: Store,
+    private httpService: HttpAuthService,
     private notificationService: NotificationService
   ) {}
 }

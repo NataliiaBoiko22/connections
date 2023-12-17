@@ -92,7 +92,7 @@ export class ProfileComponent {
   }
 
   patterns = {
-    PATTERN_NAME: /^[a-zA-Z\s]{1,40}$/,
+    PATTERN_NAME: /^[a-zA-Z\s\d\p{L}]{1,40}$/,
   };
   editProfileForm = new FormGroup({
     name: new FormControl('', [
