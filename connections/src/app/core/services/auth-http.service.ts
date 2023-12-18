@@ -52,8 +52,6 @@ export class HttpAuthService {
   }
 
   getProfileData({ headers }: RequestHeaders): Observable<ProfileResponseBody> {
-    console.log('getProfileData from httpService');
-
     return this.httpClient
       .get<ProfileResponseBody>(this.url + this.getProfilePath, {
         headers,
@@ -78,8 +76,6 @@ export class HttpAuthService {
   }
 
   public deleteLogin({ headers }: RequestHeaders) {
-    console.log('deleteLogin from httpService');
-
     return this.httpClient
       .delete(this.url + this.deleteProfilePath, {
         headers,

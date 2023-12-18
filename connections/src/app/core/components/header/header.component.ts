@@ -43,14 +43,17 @@ import { AbstractTuiThemeSwitcher } from '@taiga-ui/cdk';
 export class HeaderComponent extends AbstractTuiThemeSwitcher {
   night$: Observable<boolean>;
   constructor(
-    @Inject(ThemeNightService) readonly night: ThemeNightService,
+    private themeService: ThemeNightService,
+
     private router: Router
   ) {
     super(document);
-    this.night$ = night.nightTheme$;
+    this.night$ = themeService.nightTheme$;
+    this.themeService.nightTheme$.subscribe((night) => {});
   }
+
   get mode(): TuiBrightness | null {
-    return this.night.nightTheme$ ? 'onDark' : 'onLight';
+    return this.themeService.isNightThemeValue() ? 'onDark' : null;
   }
   toLoginPage(): void {
     this.router.navigate(['signin']);
@@ -58,9 +61,9 @@ export class HeaderComponent extends AbstractTuiThemeSwitcher {
   toProfilePage(): void {
     this.router.navigate(['profile']);
   }
+
   onToggleChange(): void {
-    this.night.toggle();
-    // this.nightMode = newValue;
+    this.themeService.toggle();
   }
   toManePage(): void {
     this.router.navigate(['']);

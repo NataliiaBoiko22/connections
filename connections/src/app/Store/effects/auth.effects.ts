@@ -98,8 +98,7 @@ export class AuthEffects {
             });
           }),
           switchMap(() => of(deleteLoginSuccess())),
-          catchError(() => of({ type: 'ERROR_ACTION' })),
-          finalize(() => console.log('Logout effect completed'))
+          catchError(() => of({ type: 'ERROR_ACTION' }))
         );
       })
     )

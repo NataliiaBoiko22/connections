@@ -1,27 +1,34 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-// export class ThemeNightService {
-
-//    private isNightTheme = new BehaviorSubject<boolean>(false);
-
-//   nightTheme$ = this.isNightTheme.asObservable();
-
-//   toggle(): void {
-//     this.isNightTheme.next(!this.isNightTheme.value);
-//   }
-// }
 export class ThemeNightService {
+  private readonly THEME_KEY = 'NightTheme';
   private isNightTheme = new BehaviorSubject<boolean>(false);
   nightTheme$: Observable<boolean> = this.isNightTheme.asObservable();
-
-  toggle(): void {
-    this.isNightTheme.next(!this.isNightTheme.value);
+  constructor() {
+    const savedTheme = this.getThemeFromLocalStorage();
+    if (savedTheme !== null) {
+      this.isNightTheme.next(savedTheme);
+    }
   }
-  isNightThemeValue(): boolean {
-    return this.isNightTheme.value;
+  toggle(): void {
+    const newValue = !this.isNightTheme.value;
+    this.isNightTheme.next(newValue);
+    this.saveThemeToLocalStorage(newValue);
+  }
+
+  isNightThemeValue(): Subject<boolean> {
+    return this.isNightTheme;
+  }
+  saveThemeToLocalStorage(isNightTheme: boolean): void {
+    localStorage.setItem(this.THEME_KEY, JSON.stringify(isNightTheme));
+  }
+
+  getThemeFromLocalStorage(): boolean | null {
+    const savedTheme = localStorage.getItem(this.THEME_KEY);
+    return savedTheme !== null ? JSON.parse(savedTheme) : null;
   }
 }

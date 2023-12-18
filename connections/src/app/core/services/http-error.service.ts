@@ -13,7 +13,6 @@ export class HttpErrorService {
   constructor(private dialogService: TuiDialogService, private store: Store) {}
 
   catchErrors(err: HttpErrorResponse): Observable<HttpError> {
-    console.log('err fron errr service', err);
     const error: HttpError = {
       status: err.status,
       message:

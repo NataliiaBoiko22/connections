@@ -138,7 +138,6 @@ export class GroupSectionComponent implements OnInit {
     });
   }
 
-  //////////////////////////////////////////////////
   createGroupForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -171,7 +170,6 @@ export class GroupSectionComponent implements OnInit {
     });
   }
   onGroupDialogPageFromNewGroup(groupID: string, nameOFGroup: string): void {
-    console.log(' onGroupDialogPageFromNewGroup(groupID: string): void');
     this.router.navigate(['/group', groupID], {
       queryParams: { createdBy: this.userId, name: nameOFGroup },
     });

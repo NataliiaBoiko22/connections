@@ -69,7 +69,6 @@ export class ProfileComponent {
 
   ngOnInit(): void {
     this.store.pipe(select(selectProfileData), take(1)).subscribe((data) => {
-      console.log('data from selectProfileData', data);
       const isProfileDataEmpty = Object.values(data).every((value) => {
         if (value && typeof value === 'object') {
           return Object.entries(value).every(([key, innerValue]) => {
@@ -79,7 +78,6 @@ export class ProfileComponent {
         return false;
       });
       if (isProfileDataEmpty) {
-        console.log('if (isProfileDataEmpty) ');
         this.store.dispatch({ type: '[Profile] Set Profile Data' });
       }
     });

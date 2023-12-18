@@ -90,7 +90,6 @@ export class GroupDialogComponent implements OnInit {
         switchMap((params) => {
           const groupID = params['groupID'];
           this.groupID = groupID;
-          console.log(this.groupID);
           return this.store.pipe(
             select(selectGroupMessagesById(this.groupID)),
             take(1)
@@ -98,7 +97,6 @@ export class GroupDialogComponent implements OnInit {
         })
       )
       .subscribe((data) => {
-        console.log('Group Messages:', data);
         if (!data) {
           this.store.dispatch(setGroupMessagesData({ groupID: this.groupID }));
         }
@@ -124,7 +122,6 @@ export class GroupDialogComponent implements OnInit {
       this.createdBy = queryParams['createdBy'];
       this.name = queryParams['name'];
     });
-    console.log('this.groupMessagesData$', this.groupMessagesData$);
     this.countdown$ = this.countdownService.getCountdownForGroupDialog(
       this.groupID
     );
@@ -193,8 +190,6 @@ export class GroupDialogComponent implements OnInit {
     this.router.navigate(['']);
   }
   onUpdateGroupsDialogButton(): void {
-    console.log('onUpdateGroupsDialogButton');
-
     this.store
       .pipe(select(selectGroupMessagesById(this.groupID)), take(1))
       .subscribe((data) => {
@@ -202,11 +197,6 @@ export class GroupDialogComponent implements OnInit {
           data.lastTimestampInGroup !== undefined &&
           data.lastTimestampInGroup > 0
         ) {
-          console.log(
-            'Max timestamp from ngOnInit:',
-            data.lastTimestampInGroup
-          );
-
           this.store.dispatch(
             setGroupMessagesData({
               groupID: this.groupID,
@@ -217,7 +207,6 @@ export class GroupDialogComponent implements OnInit {
           this.store
             .pipe(select(selectGroupMessagesById(this.groupID)), take(1))
             .subscribe((updatedData) => {
-              console.log('.subscribe((updatedData)', updatedData);
               this.countdown$ =
                 this.countdownService.getCountdownForGroupDialog(this.groupID);
 
@@ -227,11 +216,7 @@ export class GroupDialogComponent implements OnInit {
               );
             });
           return;
-        }
-        if (
-          data.lastTimestampInGroup !== undefined &&
-          data.lastTimestampInGroup > 0
-        ) {
+        } else {
           this.countdown$ = this.countdownService.getCountdownForGroupDialog(
             this.groupID
           );
@@ -250,11 +235,9 @@ export class GroupDialogComponent implements OnInit {
   }
   onSendMessage() {
     if (this.sendMessageForm.invalid) {
-      console.log(' if (this.sendMessageForm.invalid)');
       return;
     }
     const message = this.sendMessageForm.get('message')?.value as string;
-    console.log('onSendMessage', { conversationID: this.groupID, message });
     this.store.dispatch(
       sendGroupMessagesData({
         groupID: this.groupID,

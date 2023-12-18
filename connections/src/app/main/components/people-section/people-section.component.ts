@@ -4,12 +4,7 @@ import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { TuiButtonModule, TuiDialogModule } from '@taiga-ui/core';
 import { TuiInputModule } from '@taiga-ui/kit';
-import {
-  BehaviorSubject,
-  interval,
-  Subscription,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, interval, Subscription, take } from 'rxjs';
 import {
   PeopleItem,
   PeopleListResponseBody,
@@ -94,13 +89,7 @@ export class PeopleSectionComponent {
     hasConversation: boolean,
     conversationId: string
   ): void {
-    console.log('onPeopleConversationPage =>>>>');
     if (!hasConversation) {
-      console.log(
-        'onPeopleConversationPage if (!hasConversation)',
-        hasConversation
-      );
-
       this.store.dispatch(
         setPeopleConversationID({
           companion: {
@@ -111,10 +100,6 @@ export class PeopleSectionComponent {
 
       this.peopleListConversationId$.subscribe((conversationID) => {
         if (conversationID.conversationID !== '') {
-          console.log(
-            'Existing Conversation ID:',
-            conversationID.conversationID
-          );
           this.router.navigate([
             '/conversation',
             conversationID.conversationID,
@@ -122,10 +107,6 @@ export class PeopleSectionComponent {
         }
       });
     } else {
-      console.log(
-        'onPeopleConversationPage if (hasConversation)',
-        hasConversation
-      );
       this.router.navigate(['/conversation', conversationId]);
     }
   }

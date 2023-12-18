@@ -86,7 +86,6 @@ export class PeopleConversationComponent {
         switchMap((params) => {
           const conversationID = params['conversationID'];
           this.conversationID = conversationID;
-          console.log(this.conversationID);
 
           return this.store.pipe(
             select(selectPeopleMessagesById(this.conversationID)),
@@ -95,7 +94,6 @@ export class PeopleConversationComponent {
         })
       )
       .subscribe((data) => {
-        console.log('data ngOnInit PeopleConversationComponent', data);
         if (!data) {
           this.store.dispatch(
             setPeopleMessagesData({ conversationID: this.conversationID })
@@ -121,7 +119,6 @@ export class PeopleConversationComponent {
     this.route.queryParams.subscribe((queryParams) => {
       this.createdBy = queryParams['createdBy'];
     });
-    console.log('this.peopleMessagesData$', this.peopleMessagesData$);
     this.countdown$ = this.countdownService.getCountdownForPeopleConversation(
       this.conversationID
     );
@@ -239,7 +236,6 @@ export class PeopleConversationComponent {
               take(1)
             )
             .subscribe((updatedData) => {
-              console.log('.subscribe((updatedData)', updatedData);
               this.countdown$ =
                 this.countdownService.getCountdownForPeopleConversation(
                   this.conversationID
