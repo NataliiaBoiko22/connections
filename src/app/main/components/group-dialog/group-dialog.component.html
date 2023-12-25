@@ -1,0 +1,84 @@
+<div class="button-group">
+  <button
+    size="m"
+    tuiButton
+    type="submit"
+    class="tui-form__button"
+    (click)="onBackToMainButton()"
+  >
+    Back
+  </button>
+  <div class="button-group__right">
+    <button
+      size="m"
+      tuiButton
+      type="submit"
+      class="tui-form__button"
+      (click)="onUpdateGroupsDialogButton()"
+      [disabled]="isCountdownActive"
+    >
+      Update{{ (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : "" }}
+      <div id="countdown"></div>
+    </button>
+
+    <button
+      size="m"
+      tuiButton
+      type="submit"
+      class="tui-form__button"
+      (click)="onDeleteGroupsDialogButton()"
+      *ngIf="isCurrentUserGroupCreator()"
+    >
+      Delete
+      <div id="countdown"></div>
+    </button>
+  </div>
+</div>
+
+<div class="group-messages">
+  <ng-container *ngIf="groupMessagesData$ | async as groupMessagesData">
+    <ul
+      class="tui-list tui-list_large"
+      *ngFor="let item of groupMessagesData.Items"
+      [ngClass]="
+        isCurrentUserMessage(item)
+          ? 'group-messages__message-right'
+          : 'group-messages__message-left'
+      "
+    >
+      <li class="tui-list__item group-messages__message">
+        <span>{{ item.createdAt.S }}</span>
+        <span>{{ isCurrentUserMessage(item) ? "Me" : item.authorName }}</span>
+
+        <span>{{ item.message.S }}</span>
+      </li>
+    </ul>
+  </ng-container>
+
+  <form class="form" [formGroup]="sendMessageForm" class="group-messages__form">
+    <tui-input
+      formControlName="message"
+      tuiHintContent="A tooltip"
+      ngDefaultControl
+      class="group-messages__form-input"
+    >
+      Write a message
+      <input placeholder="Write a message" tuiTextfield type="text" />
+      <span class="tui-required"></span>
+    </tui-input>
+    <button
+      size="m"
+      tuiButton
+      type="submit"
+      class="tui-form__button"
+      (click)="onSendMessage()"
+    >
+      Send
+    </button>
+
+    <tui-error
+      formControlName="message"
+      [error]="[] | tuiFieldError | async"
+    ></tui-error>
+  </form>
+</div>

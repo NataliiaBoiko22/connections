@@ -1,0 +1,87 @@
+<div tuiCard class="registration">
+  <form class="registration__form" [formGroup]="authForm">
+    <h3
+      class="tui-form__header tui-form__header_margin-top_none registration__title"
+    >
+      Registration
+    </h3>
+    <div class="tui-form__row">
+      <label tuiLabel="First name" class="tui-space_bottom-4">
+        <tui-input
+          formControlName="name"
+          tuiHintContent="A tooltip"
+          ngDefaultControl
+        >
+          Enter your firstname
+          <input placeholder="Enter your firstname" tuiTextfield type="text" />
+          <span class="tui-required"></span>
+        </tui-input>
+        <tui-error
+          formControlName="name"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
+
+    <div class="tui-form__row">
+      <label tuiLabel="Email" class="tui-space_bottom-4">
+        <tui-input
+          formControlName="email"
+          tuiHintContent="A tooltip"
+          [tuiTextfieldCleaner]="true"
+          (input)="onEmailInputChange()"
+        >
+          Enter an email
+          <input autocomplete="email" tuiTextfield type="email" />
+          <span class="tui-required"></span>
+        </tui-input>
+        <tui-error [error]="getError() | async"></tui-error>
+      </label>
+    </div>
+
+    <div class="tui-form__row">
+      <label tuiLabel="Password" class="tui-space_bottom-4">
+        <tui-input-password formControlName="password" ngDefaultControl
+          >Enter a password</tui-input-password
+        >
+        <tui-error
+          formControlName="password"
+          [error]="[] | tuiFieldError | async"
+        ></tui-error>
+      </label>
+    </div>
+    <div class="tui-form__buttons registration__buttons">
+      <button
+        appearance="flat"
+        size="m"
+        tuiButton
+        type="button"
+        class="tui-form__button"
+        (click)="cancelButtonClick()"
+      >
+        Cancel
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button"
+        [disabled]="
+          authForm.invalid ||
+          isRegistrationButtonDisabled ||
+          ((emailError$ | async) ?? false)
+        "
+        (click)="onSingUpButton()"
+      >
+        Submit
+      </button>
+    </div>
+    <tr></tr>
+    <div class="registration__question">
+      <span class="registration__question-text"
+        >Do you have an account? Please, login</span
+      >
+      <a class="registration__question-link" routerLink="/signin">"Log In!"</a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,39 @@
+.profile-wrapper {
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+.profile {
+  display: flex;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 450px;
+  height: auto;
+  padding: 15px;
+  margin: 50px auto;
+  &__title {
+    color: var(--tui-primary);
+    font-size: 24px;
+    font-weight: 600;
+    margin: 10px auto;
+  }
+  &__info {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  &__info-data {
+    font-weight: 600;
+  }
+
+  &__buttons {
+    display: flex;
+    margin: 0 auto 10px;
+    gap: 40px;
+  }
+}
+
+.right-button {
+  display: block;
+  margin: 10px 0 0 auto;
+  border: 1px solid var(--tui-primary-hover);
+}

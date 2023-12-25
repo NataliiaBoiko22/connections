@@ -1,0 +1,31 @@
+.toast_wrapper {
+  background: var(--tui-base-03);
+  border: 3px solid var(--tui-primary);
+  border-radius: 8px;
+  position: fixed;
+  z-index: 10000;
+  bottom: 40px;
+  right: 20px;
+  min-width: 280px;
+  max-width: 320px;
+  word-break: break-word;
+}
+
+.inner_wrapper {
+  position: relative;
+  padding: 6px 12px;
+  text-align: center;
+}
+
+.toast_title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--tui-primary);
+}
+
+.toast_text {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--tui-base-08);
+}

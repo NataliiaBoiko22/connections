@@ -1,0 +1,10 @@
+<tui-root [class.dark]="mode">
+  <app-header></app-header>
+  <app-notification></app-notification>
+
+  <ng-container ngProjectAs="tuiOverContent">
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
+</tui-root>

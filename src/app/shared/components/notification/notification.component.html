@@ -1,0 +1,11 @@
+
+<div
+  *ngIf="data$ | async as data"
+  class="toast_wrapper"
+  [@openClose]="isOpen ? 'open' : 'closed'"
+>
+  <div class="inner_wrapper">
+    <p class="toast_title">{{ data.title }}</p>
+    <p class="toast_text">{{ data.content }}</p>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="group">
+  <div class="group__top-part">
+    <div class="group__title">GROUPS</div>
+    <div class="group__buttons">
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button group__button"
+        (click)="onUpdateGroupsButton()"
+        [disabled]="isCountdownActive"
+      >
+        Update{{
+          (countdown$ | async) ? " (" + (countdown$ | async) + "s)" : ""
+        }}
+        <div id="countdown"></div>
+      </button>
+      <button
+        size="m"
+        tuiButton
+        type="submit"
+        class="tui-form__button group__button"
+        (click)="onOpenModalButton()"
+      >
+        Create
+      </button>
+    </div>
+  </div>
+  <ng-container *ngIf="groupListData$ | async as groupListData">
+    <div class="group__main-part">
+      <div>
+        <ul
+          class="tui-list tui-list_large"
+          *ngIf="createdGroupListData$ | async as createdGroupListData"
+        >
+          <li
+            *ngFor="let groupItem of createdGroupListData"
+            class="tui-list__item group__item"
+          >
+            <button
+              type="submit"
+              (click)="onDeleteGroup(groupItem.groupID, groupItem.name)"
+              class="group__item-delete"
+            >
+              ✖
+            </button>
+            <span
+              class="group__item-name"
+              (click)="
+                onGroupDialogPageFromNewGroup(groupItem.groupID, groupItem.name)
+              "
+            >
+              {{ groupItem.name }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="groupListData.Items.length > 0">
+        <ul
+          class="tui-list tui-list_large"
+          *ngFor="let item of getSortedGroupList(groupListData)"
+        >
+          <li class="tui-list__item group__item">
+            <button
+              *ngIf="isCurrentUserGroupCreator(item.createdBy.S)"
+              (click)="onDeleteGroup(item.id.S, item.name.S)"
+              class="group__item-delete"
+              type="submit"
+            >
+              ✖
+            </button>
+            <span
+              class="group__item-name"
+              (click)="
+                onGroupDialogPage(item.id.S, item.createdBy.S, item.name.S)
+              "
+              >{{ item.name.S }}</span
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="groupListData.Items.length === 0">No items available.</div>
+    </div>
+  </ng-container>
+</div>
+<ng-template
+  let-observer
+  [tuiDialogOptions]="{ label: 'Create new group', size: 's' }"
+  [(tuiDialog)]="open"
+>
+  <form [formGroup]="createGroupForm" (ngSubmit)="observer.complete()">
+    <p>Please input name of your group</p>
+    <tui-input formControlName="name" tuiAutoFocus> Name of group </tui-input>
+    <p>
+      <button tuiButton type="submit" (click)="onCreateGroupButton()">
+        Ok
+      </button>
+    </p>
+  </form>
+</ng-template>
