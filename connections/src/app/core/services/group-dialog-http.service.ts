@@ -29,7 +29,8 @@ import {
   providedIn: 'root',
 })
 export class HttpGroupDialogService {
-  url = ' https://tasks.app.rs.school/angular';
+  // url = ' https://tasks.app.rs.school/angular';
+  url = 'https://connectionsback-whir.onrender.com';
 
   getGroupMessagesPath = '/groups/read';
   postGroupMessagesPath = '/groups/append';

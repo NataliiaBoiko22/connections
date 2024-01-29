@@ -20,7 +20,8 @@ import { RequestHeaders } from 'src/app/shared/models/http-model';
   providedIn: 'root',
 })
 export class HttpGroupService {
-  url = ' https://tasks.app.rs.school/angular';
+  // url = ' https://tasks.app.rs.school/angular';
+  url = 'https://connectionsback-whir.onrender.com';
 
   getGroupsListPath = '/groups/list';
   postGroupsPath = '/groups/create';

@@ -18,7 +18,8 @@ import {
   providedIn: 'root',
 })
 export class HttpPeopleService {
-  url = ' https://tasks.app.rs.school/angular';
+  // url = ' https://tasks.app.rs.school/angular';
+  url = 'https://connectionsback-whir.onrender.com';
 
   getPeopleListPath = '/users';
   getPeopleConversationsListPath = '/conversations/list';

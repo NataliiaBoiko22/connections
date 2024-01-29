@@ -6,46 +6,13 @@ import {
 } from '@angular/common/http';
 import {
   catchError,
-  delay,
-  EMPTY,
-  Observable,
-  switchMap,
-  tap,
-  throwError,
 } from 'rxjs';
-import {
-  SignInBody,
-  SignInResponseBody,
-  SignUpBody,
-  SignUpResponse,
-} from 'src/app/shared/models/auth-models';
 import { HttpErrorService } from './http-error.service';
-import {
-  EditProfileBody,
-  ProfileResponseBody,
-} from 'src/app/shared/models/profile-model';
-import { Store } from '@ngrx/store';
-import { setEmailError } from 'src/app/Store/actions/actions';
-import {
-  GroupListResponseBody,
-  RequestGroupItem,
-  ResponseGroupID,
-} from 'src/app/shared/models/groups-model';
-import {
-  PeopleConversationsListResponseBody,
-  PeopleListResponseBody,
-} from 'src/app/shared/models/people-model';
-import {
-  GroupMessagesRequestBody,
-  GroupMessagesResponseBody,
-} from 'src/app/shared/models/group-messages-model';
 import {
   RequestHeaders,
   ResponseSinceTimestamp,
 } from 'src/app/shared/models/http-model';
 import {
-  PeopleConversationRequestBody,
-  PeopleConversationResonseBody,
   PeopleMessagesRequestBody,
   PeopleMessagesResponseBody,
 } from 'src/app/shared/models/people-messages-model';
@@ -53,7 +20,8 @@ import {
   providedIn: 'root',
 })
 export class HttpPeopleConversationService {
-  url = ' https://tasks.app.rs.school/angular';
+  // url = ' https://tasks.app.rs.school/angular';
+  url = 'https://connectionsback-whir.onrender.com';
 
   getPeopleMessagesPath = '/conversations/read';
   postPeopleMessagesPath = '/conversations/append';
