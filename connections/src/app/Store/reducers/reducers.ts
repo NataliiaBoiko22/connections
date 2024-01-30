@@ -74,17 +74,26 @@ export const connectionsReducer = createReducer(
     };
   }),
 
-  on(setGroupMessagesDataSuccess, (state, { data }) => {
-    const updatedGroupMessages = {
-      ...state.groupMessages,
-      [data.groupID]: data,
-    };
-
-    return {
-      ...state,
-      groupMessages: updatedGroupMessages,
-    };
-  }),
+on(setGroupMessagesDataSuccess, (state, { data }) => {
+  const existingGroupMessages = state.groupMessages[data.groupID] || {};
+  const existingItems = existingGroupMessages.Items || [];
+  const newDataItems = data.Items || [];
+  const uniqueNewItems  = newDataItems.filter(newItem =>
+    !existingItems.some(existingItem => existingItem.message.S === newItem.message.S)
+  );
+  const updatedGroupMessages = {
+    ...state.groupMessages,
+    [data.groupID]: {
+      ...existingGroupMessages,
+      ...data,
+      Items: [...existingItems, ...uniqueNewItems ],
+    },
+  };
+  return {
+    ...state,
+    groupMessages: updatedGroupMessages,
+  };
+}),
 
   on(sendGroupMessagesDataSuccess, (state, { groupID, authorID, message }) => {
     const group = state.groupMessages[groupID];
@@ -111,9 +120,19 @@ export const connectionsReducer = createReducer(
   }),
 
   on(setPeopleMessagesDataSuccess, (state, { data }) => {
+    const existingPeopleMessages = state.peopleMessages[data.conversationID] || {};
+    const existingMessagesItems = existingPeopleMessages.Items || [];
+    const newDataMessagesItems = data.Items || [];
+    const uniqueNewMessagesItems  = newDataMessagesItems.filter(newItem =>
+      !existingMessagesItems.some(existingItem => existingItem.message.S === newItem.message.S)
+    );
     const updatedPeopleMessages = {
       ...state.peopleMessages,
-      [data.conversationID]: data,
+      [data.conversationID]: {
+        ...existingPeopleMessages,
+        ...data,
+        Items: [...existingMessagesItems, ...uniqueNewMessagesItems ],
+      },
     };
 
     return {
@@ -121,6 +140,8 @@ export const connectionsReducer = createReducer(
       peopleMessages: updatedPeopleMessages,
     };
   }),
+
+
 
   on(setPeopleConversationIDSuccess, (state, { conversationID, companion }) => {
     const updatedPeopleList = state.peopleList.Items.map((person) => {

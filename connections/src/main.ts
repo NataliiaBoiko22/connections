@@ -64,10 +64,10 @@ bootstrapApplication(AppComponent, {
       ThemeNightService
     ),
 
-    {
-      provide: ErrorHandler,
-      useClass: CustomErrorHandler,
-    },
+    // {
+    //   provide: ErrorHandler,
+    //   useClass: CustomErrorHandler,
+    // },
     HttpClientModule,
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimations(),

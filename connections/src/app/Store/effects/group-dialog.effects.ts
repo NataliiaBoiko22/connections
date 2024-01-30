@@ -37,7 +37,6 @@ export class GroupDialogEffects {
         };
         return this.httpService
           .getGroupMessages({ headers }, paramsID, paramsSince)
-
           .pipe(
             take(1),
             map((data: GroupMessagesResponseBody) => {
