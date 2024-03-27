@@ -21,7 +21,8 @@ import {
 })
 export class HttpPeopleConversationService {
   // url = ' https://tasks.app.rs.school/angular';
-  url = 'https://connectionsback-whir.onrender.com';
+  // url = 'https://connectionsback-whir.onrender.com';
+  url = 'https://connectionsback1.onrender.com';
 
   getPeopleMessagesPath = '/conversations/read';
   postPeopleMessagesPath = '/conversations/append';

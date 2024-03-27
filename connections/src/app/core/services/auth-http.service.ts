@@ -20,7 +20,8 @@ import { RequestHeaders } from 'src/app/shared/models/http-model';
 })
 export class HttpAuthService {
   // url = ' https://tasks.app.rs.school/angular';
-  url = 'https://connectionsback-whir.onrender.com';
+  // url = 'https://connectionsback-whir.onrender.com';
+  url = 'https://connectionsback1.onrender.com';
   signUpPath = '/registration';
   singInPath = '/login';
   getProfilePath = '/profile';

@@ -30,7 +30,8 @@ import {
 })
 export class HttpGroupDialogService {
   // url = ' https://tasks.app.rs.school/angular';
-  url = 'https://connectionsback-whir.onrender.com';
+  // url = 'https://connectionsback-whir.onrender.com';
+  url = 'https://connectionsback1.onrender.com';
 
   getGroupMessagesPath = '/groups/read';
   postGroupMessagesPath = '/groups/append';
@@ -68,7 +69,6 @@ export class HttpGroupDialogService {
     body: GroupMessagesRequestBody,
     headers: RequestHeaders
   ) {
-
     return this.httpClient
       .post(this.url + this.postGroupMessagesPath, body, headers)
       .pipe(

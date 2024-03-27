@@ -19,7 +19,8 @@ import {
 })
 export class HttpPeopleService {
   // url = ' https://tasks.app.rs.school/angular';
-  url = 'https://connectionsback-whir.onrender.com';
+  // url = 'https://connectionsback-whir.onrender.com';
+  url = 'https://connectionsback1.onrender.com';
 
   getPeopleListPath = '/users';
   getPeopleConversationsListPath = '/conversations/list';
